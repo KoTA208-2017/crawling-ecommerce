@@ -29,6 +29,7 @@ class CrawlingECommercePipeline(object):
                             product_price text,
                             product_category text,
                             product_url text,
+                            image text,
                             image_url text
                         )""")
 
@@ -37,7 +38,7 @@ class CrawlingECommercePipeline(object):
         return item
 
     def store_db(self,item):
-        self.curr.execute("""INSERT INTO tbm_products_ecommerce values (%s,%s,%s,%s,%s)""", (
+        self.curr.execute("""INSERT INTO tbm_products_ecommerce values (%s,%s,%s,%s,%s,%s)""", (
             item['product_name'],
             item['product_price'],
             item['product_category'],

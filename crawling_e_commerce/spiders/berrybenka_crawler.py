@@ -54,6 +54,14 @@ class BerrybenkaCrawlerSpider(scrapy.Spider):
             product_link=''.join(raw_product_link).strip(
             ) if raw_product_link else None
 
+            # split image link
+            image_link = str(raw_product_image_link[0])
+            template = "https://im.berrybenka.com/assets/cache/300x456/product-overlay/_VDEGZ_2836.png"
+            if(image_link == template):
+                raw_product_image_link[0] = BerrybenkaCrawlerSpider.split_url_image(self,raw_product_image_link[1])
+            else:
+                raw_product_image_link[0] = BerrybenkaCrawlerSpider.split_url_image(self,raw_product_image_link[0])
+
             # storing item
             yield CrawlingECommerceItem (
                 product_name=product_name,
@@ -62,8 +70,6 @@ class BerrybenkaCrawlerSpider(scrapy.Spider):
                 product_category=product_category,
                 image_urls=raw_product_image_link
             )
-
-            # yield items
         
         XPATH_PRAGINATION_LINK="//*[(@class='next right')]/a/@href"
 
@@ -78,6 +84,11 @@ class BerrybenkaCrawlerSpider(scrapy.Spider):
             logging.info("current URL %s", next_url)
             yield response.follow(next_url, callback = self.parse, meta = {"category_text": product_category})
 
+    def split_url_image(self,url_image):
+        image = str(url_image)
+        image = image.split("cache/300x456", 1)
+        return image[0] + "upload" + image[1]
+        
     def select_category_top(self):
         return "top"
 
@@ -89,7 +100,7 @@ class BerrybenkaCrawlerSpider(scrapy.Spider):
 
     def select_category(self, categories):
         category = {
-            'cullotes': BerrybenkaCrawlerSpider.select_category_bottom(self),
+            'culottes': BerrybenkaCrawlerSpider.select_category_bottom(self),
             'long-pants': BerrybenkaCrawlerSpider.select_category_bottom(self),
             'short-pants': BerrybenkaCrawlerSpider.select_category_bottom(self),
             'jeans': BerrybenkaCrawlerSpider.select_category_bottom(self),
@@ -105,7 +116,7 @@ class BerrybenkaCrawlerSpider(scrapy.Spider):
             'cardigans': BerrybenkaCrawlerSpider.select_category_top(self),
             'tank-top': BerrybenkaCrawlerSpider.select_category_top(self),
             'women-tees': BerrybenkaCrawlerSpider.select_category_top(self),
-            'women-tshirt': BerrybenkaCrawlerSpider.select_category_top(self),
+            'women-shirts': BerrybenkaCrawlerSpider.select_category_top(self),
             'blouse': BerrybenkaCrawlerSpider.select_category_top(self),
             
         }

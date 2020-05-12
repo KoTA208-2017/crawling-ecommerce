@@ -66,7 +66,7 @@ ROBOTSTXT_OBEY = False
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'scrapy.pipelines.images.ImagesPipeline': 1
-    # 'crawling_e_commerce.pipelines.CrawlingECommercePipeline': 300,
+    # 'crawling_e_commerce.pipelines.CrawlingECommercePipeline': 300
     # 'scrapy.pipelines.files.FilesPipeline': 1
 }
 IMAGES_STORE = 'tmp/images/'
