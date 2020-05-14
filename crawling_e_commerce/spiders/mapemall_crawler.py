@@ -3,9 +3,11 @@ import scrapy
 import csv
 import os
 import logging
+import time
 
 from selenium import webdriver
 from selenium.webdriver import Chrome
+from selenium.common.exceptions import ElementNotInteractableException
 from ..items import CrawlingECommerceItem
 
 class MapemallCrawlerSpider(scrapy.Spider):
@@ -33,10 +35,28 @@ class MapemallCrawlerSpider(scrapy.Spider):
         """Function to process clothes category results page"""
         self.driver.get(response.url)
         product_category=response.meta["category_text"]
-        products=response.xpath("//*[(@class='list-item')]")
+        # products=response.xpath("//*[(@class='list-item')]")
         
         # item containers for storing product
         items = CrawlingECommerceItem()
+        self.driver.get(response.request.url)
+
+        view_more = self.driver.find_element_by_xpath('//*[(@class="load-more")]//div[@class="load-btn"]//a')
+        # MapemallCrawlerSpider.scroll(self, self.driver, 5)
+        while True:
+            view_more = '//*[(@class="load-more")]//div[not(contains(@style,"display:none"))]'
+
+            try:
+                self.driver.find_element_by_xpath(view_more).click()
+            except ElementNotInteractableException:
+                self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                time.sleep(5)
+            else: 
+                yield response.follow(str(response.request.url), callback = self.parse, meta = {"category_text": product_category})
+
+        # products = self.driver.find_elements_by_xpath('//*[(@class="product-grid")]')
+        # source = self.driver.page_source
+        # print("!SOURCE "+source)
         
         # iterating over search results
         # for product in products:
@@ -74,6 +94,73 @@ class MapemallCrawlerSpider(scrapy.Spider):
         
     #     XPATH_PRAGINATION_LINK="//*[(@class='next right')]/a/@href"
 
-        yield response.follow(str(response.request.url), callback = self.parse, meta = {"category_text": product_category})
+        self.driver.close()
+        # yield response.follow(str(response.request.url), callback = self.parse, meta = {"category_text": product_category})
 
+    def scroll(self, driver, timeout):
+        scroll_pause_time = timeout
+
+        while True:
+            view_more = '//*[(@class="load-more")]//div[not(contains(@style,"display:none"))]'
+
+            try:
+                driver.find_element_by_xpath(view_more).click()
+            except ElementNotInteractableException:
+                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                # time.sleep(scroll_pause_time)
+            else: 
+                break
+
+    def split_image_url(self, url):
+        separator = '?x-oss'
+
+        current_url = str(url)
+        category = current_url.split(separator)
+        return category[0]
+
+    def split_url(self, url):
+        separator = 'ct='
+
+        current_url = str(url)
+        category = current_url.split(separator,1)
+        return category[1]
+
+    def split_category(self, category):
+        separator = '-'
+
+        category = str(category)
+        category = category.split(separator,4)
+        return category
+
+    def select_category_top(self):
+        return "top"
+
+    def select_category_long(self):
+        return "long"
     
+    def select_category_bottom(self):
+        return "bottom"
+
+    def select_category_jeans(self, category):
+        cat = {
+            '113': MapemallCrawlerSpider.select_category_top(self),
+            '119': MapemallCrawlerSpider.select_category_top(self),
+            '121': MapemallCrawlerSpider.select_category_top(self),
+            '118': MapemallCrawlerSpider.select_category_bottom(self)
+        }
+        
+        return cat.get(category,"category")
+
+    def select_category(self, url):
+        argument = MapemallCrawlerSpider.split_url(self,url = url)
+        categories = MapemallCrawlerSpider.split_category(self,category=argument)
+
+        category = {
+            '8': MapemallCrawlerSpider.select_category_top(self),
+            '9': MapemallCrawlerSpider.select_category_top(self),
+            '10': MapemallCrawlerSpider.select_category_bottom(self),
+            '11': MapemallCrawlerSpider.select_category_long(self),
+            '13': MapemallCrawlerSpider.select_category_jeans(self,category= categories[3])
+        }
+        
+        return category.get(categories[2],"category")
