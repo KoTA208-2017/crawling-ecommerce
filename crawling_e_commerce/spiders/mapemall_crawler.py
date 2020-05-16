@@ -65,10 +65,13 @@ class MapemallCrawlerSpider(scrapy.Spider):
             ) if raw_product_image_link else None
             product_link=''.join(raw_product_link).strip(
             ) if raw_product_link else None
+            
+            product_price=MapemallCrawlerSpider.cleaning_data_product_price(product_price)
 
             product_category=MapemallCrawlerSpider.select_category(self,url=response.request.url)
             raw_product_image_link=MapemallCrawlerSpider.split_image_url(self,url=raw_product_image_link)
             image_filename=MapemallCrawlerSpider.split_image_filename(self,url=raw_product_image_link)
+            image_filename='m_'+image_filename
 
             dirname='images'
             MapemallCrawlerSpider.make_dir(dirname)
@@ -86,6 +89,14 @@ class MapemallCrawlerSpider(scrapy.Spider):
             )
 
         self.driver.close()
+
+    def cleaning_data_product_price(product_price):
+        txt=product_price
+        price=txt.split(". ")
+        price=price[1].split(".")
+
+        price = ''.join(price)
+        return int(price)
 
     def make_dir(dirname):
         current_path = os.getcwd()
@@ -119,7 +130,6 @@ class MapemallCrawlerSpider(scrapy.Spider):
 
     def split_image_url(self, url):
         separator = '?x-oss'
-
         current_url = str(url)
         category = current_url.split(separator)
         return category[0]
