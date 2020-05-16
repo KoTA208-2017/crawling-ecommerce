@@ -8,9 +8,10 @@
 import scrapy
 
 class CrawlingECommerceItem(scrapy.Item):
+    site_name = scrapy.Field()
     product_name = scrapy.Field()
     product_price = scrapy.Field()
     product_url = scrapy.Field()
     product_category = scrapy.Field()
-    image_urls = scrapy.Field()
-    images = scrapy.Field()
+    product_image_url = scrapy.Field()
+    product_image = scrapy.Field()

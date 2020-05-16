@@ -4,7 +4,8 @@ import csv
 import os
 import logging
 import time
-import urllib.request
+import requests
+import shutil
 
 from selenium import webdriver
 from selenium.webdriver import Chrome
@@ -67,18 +68,41 @@ class MapemallCrawlerSpider(scrapy.Spider):
 
             product_category=MapemallCrawlerSpider.select_category(self,url=response.request.url)
             raw_product_image_link=MapemallCrawlerSpider.split_image_url(self,url=raw_product_image_link)
+            image_filename=MapemallCrawlerSpider.split_image_filename(self,url=raw_product_image_link)
+
+            dirname='images'
+            MapemallCrawlerSpider.make_dir(dirname)
+            MapemallCrawlerSpider.download_images(dirname, raw_product_image_link, image_filename)
 
             # storing item
             yield CrawlingECommerceItem (
+                site_name='Mapemall',
                 product_name=product_name,
                 product_price=product_price,
                 product_url=product_link,
                 product_category=product_category,
-                image_urls=raw_product_image_link
+                product_image_url=raw_product_image_link,
+                product_image=image_filename+'.jpg'
             )
 
         self.driver.close()
 
+    def make_dir(dirname):
+        current_path = os.getcwd()
+        path = os.path.join(current_path, dirname)
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+    def download_images(dirname, link, raw_product_name):
+        response = requests.get(link, stream=True)
+        MapemallCrawlerSpider.save_image_to_file(response, dirname, raw_product_name)
+        time.sleep(3)
+        del response
+
+    def save_image_to_file(image, dirname, suffix):
+        with open('{dirname}/{suffix}.jpg'.format(dirname=dirname, suffix=suffix), 'wb') as out_file:
+            shutil.copyfileobj(image.raw, out_file)
+    
     def scroll(self, driver, timeout):
         scroll_pause_time = timeout
 
@@ -99,6 +123,13 @@ class MapemallCrawlerSpider(scrapy.Spider):
         current_url = str(url)
         category = current_url.split(separator)
         return category[0]
+    
+    def split_image_filename(self, url):
+        separator = '/'
+
+        current_url = str(url)
+        category = current_url.split(separator)
+        return category[4]
 
     def split_url(self, url):
         separator = 'ct='
