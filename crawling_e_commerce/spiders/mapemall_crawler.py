@@ -24,11 +24,11 @@ class MapemallCrawlerSpider(scrapy.Spider):
         self.driver = webdriver.Chrome(chrome_options=MapemallCrawlerSpider.options)
 
     def parse(self, response):
-        """Function to process clothes category results page"""
+        """Function to process clothes results page"""
         self.driver.get(response.url)
 
+        # scroll page
         totalPages = int(self.driver.execute_script(" return document.getElementById('totalPages').value"))
-
         for page in range(1,totalPages):
             view_more = '//*[(@class="load-more")]//div[not(contains(@style,"display:none"))]'
 
@@ -38,18 +38,17 @@ class MapemallCrawlerSpider(scrapy.Spider):
                 self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 time.sleep(5)
 
-        products = self.driver.find_elements_by_xpath('//*[(@class="col-12-3 col-sm-12-6 list-item")]')
-
         # item containers for storing product
         items = CrawlingECommerceItem()
 
         # iterating over search results
+        products = self.driver.find_elements_by_xpath('//*[(@class="col-12-3 col-sm-12-6 list-item")]')
         for product in products:
             # Defining the XPaths
-            XPATH_PRODUCT_LINK='.//div[@class="goods-tit"]//a'
             XPATH_PRODUCT_NAME='.//div[@class="goods-tit"]//a'
             XPATH_PRODUCT_PRICE='.//div[@class="goods-price special-price"]//span'
             XPATH_PRODUCT_IMAGE_LINK='.//div[@class="img-box"]/a/img'
+            XPATH_PRODUCT_LINK='.//div[@class="goods-tit"]//a'
 
             raw_product_name=product.find_element_by_xpath(XPATH_PRODUCT_NAME).text
             raw_product_price=product.find_element_by_xpath(XPATH_PRODUCT_PRICE).text
@@ -65,17 +64,20 @@ class MapemallCrawlerSpider(scrapy.Spider):
             ) if raw_product_image_link else None
             product_link=''.join(raw_product_link).strip(
             ) if raw_product_link else None
-            
             product_price=MapemallCrawlerSpider.cleaning_data_product_price(product_price)
-
+            
+            # select category
             product_category=MapemallCrawlerSpider.select_category(self,url=response.request.url)
+
+            # create image directory
+            dirname='images'
+            MapemallCrawlerSpider.make_dir(self,dirname)
+
+            # download image
             raw_product_image_link=MapemallCrawlerSpider.split_image_url(self,url=raw_product_image_link)
             image_filename=MapemallCrawlerSpider.split_image_filename(self,url=raw_product_image_link)
             image_filename='m_'+image_filename
-
-            dirname='images'
-            MapemallCrawlerSpider.make_dir(dirname)
-            MapemallCrawlerSpider.download_images(dirname, raw_product_image_link, image_filename)
+            MapemallCrawlerSpider.download_images(self,dirname, raw_product_image_link, image_filename)
 
             # storing item
             yield CrawlingECommerceItem (
@@ -90,7 +92,7 @@ class MapemallCrawlerSpider(scrapy.Spider):
 
         self.driver.close()
 
-    def cleaning_data_product_price(product_price):
+    def cleaning_data_product_price(self,product_price):
         txt=product_price
         price=txt.split(". ")
         price=price[1].split(".")
@@ -98,19 +100,19 @@ class MapemallCrawlerSpider(scrapy.Spider):
         price = ''.join(price)
         return int(price)
 
-    def make_dir(dirname):
+    def make_dir(self,dirname):
         current_path = os.getcwd()
         path = os.path.join(current_path, dirname)
         if not os.path.exists(path):
             os.makedirs(path)
 
-    def download_images(dirname, link, raw_product_name):
+    def download_images(self,dirname, link, raw_product_name):
         response = requests.get(link, stream=True)
-        MapemallCrawlerSpider.save_image_to_file(response, dirname, raw_product_name)
+        MapemallCrawlerSpider.save_image_to_file(self,response, dirname, raw_product_name)
         time.sleep(3)
         del response
 
-    def save_image_to_file(image, dirname, suffix):
+    def save_image_to_file(self,image, dirname, suffix):
         with open('{dirname}/{suffix}.jpg'.format(dirname=dirname, suffix=suffix), 'wb') as out_file:
             shutil.copyfileobj(image.raw, out_file)
     
