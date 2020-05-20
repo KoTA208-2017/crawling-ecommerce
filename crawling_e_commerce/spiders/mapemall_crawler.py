@@ -74,8 +74,8 @@ class MapemallCrawlerSpider(scrapy.Spider):
             image_filename='m_'+image_filename
 
             dirname='images'
-            MapemallCrawlerSpider.make_dir(dirname)
-            MapemallCrawlerSpider.download_images(dirname, raw_product_image_link, image_filename)
+            MapemallCrawlerSpider.make_dir(self,dirname)
+            MapemallCrawlerSpider.download_images(self,dirname, raw_product_image_link, image_filename)
 
             # storing item
             yield CrawlingECommerceItem (
@@ -90,7 +90,7 @@ class MapemallCrawlerSpider(scrapy.Spider):
 
         self.driver.close()
 
-    def cleaning_data_product_price(product_price):
+    def cleaning_data_product_price(self,product_price):
         txt=product_price
         price=txt.split(". ")
         price=price[1].split(".")
@@ -98,19 +98,19 @@ class MapemallCrawlerSpider(scrapy.Spider):
         price = ''.join(price)
         return int(price)
 
-    def make_dir(dirname):
+    def make_dir(self,dirname):
         current_path = os.getcwd()
         path = os.path.join(current_path, dirname)
         if not os.path.exists(path):
             os.makedirs(path)
 
-    def download_images(dirname, link, raw_product_name):
+    def download_images(self,dirname, link, raw_product_name):
         response = requests.get(link, stream=True)
-        MapemallCrawlerSpider.save_image_to_file(response, dirname, raw_product_name)
+        MapemallCrawlerSpider.save_image_to_file(self,response, dirname, raw_product_name)
         time.sleep(3)
         del response
 
-    def save_image_to_file(image, dirname, suffix):
+    def save_image_to_file(self,image, dirname, suffix):
         with open('{dirname}/{suffix}.jpg'.format(dirname=dirname, suffix=suffix), 'wb') as out_file:
             shutil.copyfileobj(image.raw, out_file)
     
