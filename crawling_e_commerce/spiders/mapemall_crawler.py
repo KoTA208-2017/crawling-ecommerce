@@ -38,18 +38,17 @@ class MapemallCrawlerSpider(scrapy.Spider):
                 self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 time.sleep(5)
 
-        products = self.driver.find_elements_by_xpath('//*[(@class="col-12-3 col-sm-12-6 list-item")]')
-
         # item containers for storing product
         items = CrawlingECommerceItem()
+        products = self.driver.find_elements_by_xpath('//*[(@class="col-12-3 col-sm-12-6 list-item")]')
 
         # iterating over search results
         for product in products:
             # Defining the XPaths
-            XPATH_PRODUCT_LINK='.//div[@class="goods-tit"]//a'
             XPATH_PRODUCT_NAME='.//div[@class="goods-tit"]//a'
             XPATH_PRODUCT_PRICE='.//div[@class="goods-price special-price"]//span'
             XPATH_PRODUCT_IMAGE_LINK='.//div[@class="img-box"]/a/img'
+            XPATH_PRODUCT_LINK='.//div[@class="goods-tit"]//a'
 
             raw_product_name=product.find_element_by_xpath(XPATH_PRODUCT_NAME).text
             raw_product_price=product.find_element_by_xpath(XPATH_PRODUCT_PRICE).text
@@ -65,16 +64,16 @@ class MapemallCrawlerSpider(scrapy.Spider):
             ) if raw_product_image_link else None
             product_link=''.join(raw_product_link).strip(
             ) if raw_product_link else None
-            
             product_price=MapemallCrawlerSpider.cleaning_data_product_price(product_price)
-
+            
             product_category=MapemallCrawlerSpider.select_category(self,url=response.request.url)
-            raw_product_image_link=MapemallCrawlerSpider.split_image_url(self,url=raw_product_image_link)
-            image_filename=MapemallCrawlerSpider.split_image_filename(self,url=raw_product_image_link)
-            image_filename='m_'+image_filename
 
             dirname='images'
             MapemallCrawlerSpider.make_dir(self,dirname)
+
+            raw_product_image_link=MapemallCrawlerSpider.split_image_url(self,url=raw_product_image_link)
+            image_filename=MapemallCrawlerSpider.split_image_filename(self,url=raw_product_image_link)
+            image_filename='m_'+image_filename
             MapemallCrawlerSpider.download_images(self,dirname, raw_product_image_link, image_filename)
 
             # storing item
