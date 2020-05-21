@@ -14,7 +14,6 @@ from ..items import CrawlingECommerceItem
 
 class MapemallCrawlerSpider(scrapy.Spider):
     name = 'mapemall_crawler'
-    # separator = 'n/'
     allowed_domains = ['www.mapemall.com']
     options = webdriver.ChromeOptions()
     options.add_argument('window-size=1200x600')
