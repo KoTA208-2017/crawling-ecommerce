@@ -12,6 +12,7 @@ from selenium.webdriver import Chrome
 from selenium.common.exceptions import ElementNotInteractableException
 from ..items import CrawlingECommerceItem
 from ..split_string import SplitString
+from ..category import Category
 
 class MapemallCrawlerSpider(scrapy.Spider):
     name = 'mapemall_crawler'
@@ -68,7 +69,7 @@ class MapemallCrawlerSpider(scrapy.Spider):
             # download image
             raw_product_image_link = MapemallCrawlerSpider.split_image_url(self, raw_product_image_link)
             image_filename = MapemallCrawlerSpider.split_image_filename(self, raw_product_image_link)
-            MapemallCrawlerSpider.download_images(self, dirname, raw_product_image_link, image_filename)
+            # MapemallCrawlerSpider.download_images(self, dirname, raw_product_image_link, image_filename)
 
             # storing item
             yield CrawlingECommerceItem (
@@ -136,21 +137,12 @@ class MapemallCrawlerSpider(scrapy.Spider):
         result_category = SplitString.action(self, category, separator)
         return result_category
 
-    def select_category_top(self):
-        return "top"
-
-    def select_category_long(self):
-        return "long"
-    
-    def select_category_bottom(self):
-        return "bottom"
-
     def select_category_jeans(self, category):
         cat = {
-            '113': MapemallCrawlerSpider.select_category_top(self),
-            '119': MapemallCrawlerSpider.select_category_top(self),
-            '121': MapemallCrawlerSpider.select_category_top(self),
-            '118': MapemallCrawlerSpider.select_category_bottom(self)
+            '113': Category.select_top(self),
+            '119': Category.select_top(self),
+            '121': Category.select_top(self),
+            '118': Category.select_bottom(self)
         }
         
         return cat.get(category,"category")
@@ -160,10 +152,10 @@ class MapemallCrawlerSpider(scrapy.Spider):
         categories = MapemallCrawlerSpider.split_category(self, argument)
         
         category = {
-            '8': MapemallCrawlerSpider.select_category_top(self),
-            '9': MapemallCrawlerSpider.select_category_top(self),
-            '10': MapemallCrawlerSpider.select_category_bottom(self),
-            '11': MapemallCrawlerSpider.select_category_long(self),
+            '8': Category.select_top(self),
+            '9': Category.select_top(self),
+            '10': Category.select_bottom(self),
+            '11': Category.select_long(self),
             '13': MapemallCrawlerSpider.select_category_jeans(self,category= categories[3])
         }
         
