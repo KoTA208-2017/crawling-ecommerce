@@ -27,7 +27,7 @@ class MapemallCrawlerSpider(scrapy.Spider):
         self.driver.get(response.url)
 
         # scroll page
-        MapemallCrawlerSpider.scroll(self,5)
+        MapemallCrawlerSpider.scroll(self, 5)
 
         # item containers for storing product
         items = CrawlingECommerceItem()
@@ -36,33 +36,33 @@ class MapemallCrawlerSpider(scrapy.Spider):
         products = self.driver.find_elements_by_xpath('//*[(@class="col-12-3 col-sm-12-6 list-item")]')
         for product in products:
             # Defining the XPaths
-            XPATH_PRODUCT_NAME='.//div[@class="goods-tit"]//a'
-            XPATH_PRODUCT_PRICE='.//div[@class="goods-price special-price"]//span'
-            XPATH_PRODUCT_IMAGE_LINK='.//div[@class="img-box"]/a/img'
-            XPATH_PRODUCT_LINK='.//div[@class="goods-tit"]//a'
+            XPATH_PRODUCT_NAME = './/div[@class="goods-tit"]//a'
+            XPATH_PRODUCT_PRICE = './/div[@class="goods-price special-price"]//span'
+            XPATH_PRODUCT_IMAGE_LINK = './/div[@class="img-box"]/a/img'
+            XPATH_PRODUCT_LINK = './/div[@class="goods-tit"]//a'
 
-            raw_product_name=product.find_element_by_xpath(XPATH_PRODUCT_NAME).text
-            raw_product_price=product.find_element_by_xpath(XPATH_PRODUCT_PRICE).text
-            raw_product_image_link=product.find_element_by_xpath(XPATH_PRODUCT_IMAGE_LINK).get_attribute("src")
-            raw_product_link=product.find_element_by_xpath(XPATH_PRODUCT_LINK).get_attribute("href")
+            raw_product_name = product.find_element_by_xpath(XPATH_PRODUCT_NAME).text
+            raw_product_price = product.find_element_by_xpath(XPATH_PRODUCT_PRICE).text
+            raw_product_image_link = product.find_element_by_xpath(XPATH_PRODUCT_IMAGE_LINK).get_attribute("src")
+            raw_product_link = product.find_element_by_xpath(XPATH_PRODUCT_LINK).get_attribute("href")
 
             # cleaning the data
-            product_name=''.join(raw_product_name).strip(
+            product_name = ''.join(raw_product_name).strip(
             ) if raw_product_name else None
-            product_price=''.join(raw_product_price).strip(
+            product_price = ''.join(raw_product_price).strip(
             ) if raw_product_price else None
-            product_image_link=''.join(raw_product_image_link).strip(
+            product_image_link = ''.join(raw_product_image_link).strip(
             ) if raw_product_image_link else None
-            product_link=''.join(raw_product_link).strip(
+            product_link = ''.join(raw_product_link).strip(
             ) if raw_product_link else None
             product_price = MapemallCrawlerSpider.clean_product_price(self,product_price)
             
             # select category
-            product_category=MapemallCrawlerSpider.select_category(self,url=response.request.url)
+            product_category = MapemallCrawlerSpider.select_category(self, url=response.request.url)
 
             # create image directory
-            dirname='images'
-            MapemallCrawlerSpider.make_dir(self,dirname)
+            dirname = 'images'
+            MapemallCrawlerSpider.make_dir(self, dirname)
 
             # download image
             raw_product_image_link = MapemallCrawlerSpider.split_image_url(self, raw_product_image_link)
@@ -71,13 +71,13 @@ class MapemallCrawlerSpider(scrapy.Spider):
 
             # storing item
             yield CrawlingECommerceItem (
-                site_name='Mapemall',
-                product_name=product_name,
-                product_price=product_price,
-                product_url=product_link,
-                product_category=product_category,
-                product_image_url=raw_product_image_link,
-                product_image=image_filename+'.jpg'
+                site_name = 'Mapemall',
+                product_name = product_name,
+                product_price = product_price,
+                product_url = product_link,
+                product_category = product_category,
+                product_image_url = raw_product_image_link,
+                product_image = image_filename+'.jpg'
             )
 
         self.driver.close()
