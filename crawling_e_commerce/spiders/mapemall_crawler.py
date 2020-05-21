@@ -11,6 +11,7 @@ from selenium import webdriver
 from selenium.webdriver import Chrome
 from selenium.common.exceptions import ElementNotInteractableException
 from ..items import CrawlingECommerceItem
+from ..split_string import SplitString
 
 class MapemallCrawlerSpider(scrapy.Spider):
     name = 'mapemall_crawler'
@@ -83,8 +84,8 @@ class MapemallCrawlerSpider(scrapy.Spider):
         self.driver.close()
 
     def clean_product_price(self,product_price):
-        price = MapemallCrawlerSpider.split_string(self,product_price,". ")
-        price = MapemallCrawlerSpider.split_string(self,price[1],".")
+        price = SplitString.action(self,product_price,". ")
+        price = SplitString.action(self,price[1],".")
         return int(''.join(price))
 
     def make_dir(self,dirname):
@@ -115,28 +116,24 @@ class MapemallCrawlerSpider(scrapy.Spider):
                 self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 time.sleep(timeout)
 
-    def split_string(self, text, separator):
-        text_split = str(text)
-        return text_split.split(separator)
-
     def split_image_url(self, url):
         separator = '?x-oss'
-        result_image_url = MapemallCrawlerSpider.split_string(self, url, separator)
+        result_image_url = SplitString.action(self, url, separator)
         return result_image_url[0]
     
     def split_image_filename(self, url):
         separator = '/'
-        result_image_filename = MapemallCrawlerSpider.split_string(self, url, separator)
+        result_image_filename = SplitString.action(self, url, separator)
         return 'm_' + result_image_filename[4]
 
     def split_url(self, url):
         separator = 'ct='
-        result_url = MapemallCrawlerSpider.split_string(self, url, separator)
+        result_url = SplitString.action(self, url, separator)
         return result_url[1]
 
     def split_category(self, category):
         separator = '-'
-        result_category = MapemallCrawlerSpider.split_string(self, category, separator)
+        result_category = SplitString.action(self, category, separator)
         return result_category
 
     def select_category_top(self):
