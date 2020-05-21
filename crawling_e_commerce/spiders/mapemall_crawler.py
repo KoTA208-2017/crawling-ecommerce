@@ -56,7 +56,7 @@ class MapemallCrawlerSpider(scrapy.Spider):
             ) if raw_product_image_link else None
             product_link=''.join(raw_product_link).strip(
             ) if raw_product_link else None
-            product_price=MapemallCrawlerSpider.cleaning_data_product_price(product_price)
+            product_price=MapemallCrawlerSpider.cleaning_data_product_price(self,product_price)
             
             # select category
             product_category=MapemallCrawlerSpider.select_category(self,url=response.request.url)
