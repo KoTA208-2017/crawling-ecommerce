@@ -130,3 +130,6 @@ dmypy.json
 
 # Crawling result
 tmp/
+images/
+.json
+.csv
