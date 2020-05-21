@@ -20,7 +20,7 @@ class MapemallCrawlerSpider(scrapy.Spider):
     options.add_argument('window-size=1200x600')
 
     def __init__(self):
-        self.start_urls = ['https://www.mapemall.com/forher/clothing?ct=1-7-10-102']
+        self.start_urls = ['https://www.mapemall.com/forher/clothing?ct=1-7-13-113']
         self.driver = webdriver.Chrome(chrome_options=MapemallCrawlerSpider.options)
 
     def parse(self, response):
@@ -56,7 +56,7 @@ class MapemallCrawlerSpider(scrapy.Spider):
             ) if raw_product_image_link else None
             product_link=''.join(raw_product_link).strip(
             ) if raw_product_link else None
-            product_price=MapemallCrawlerSpider.cleaning_data_product_price(self,product_price)
+            product_price = MapemallCrawlerSpider.clean_product_price(self,product_price)
             
             # select category
             product_category=MapemallCrawlerSpider.select_category(self,url=response.request.url)
@@ -66,10 +66,9 @@ class MapemallCrawlerSpider(scrapy.Spider):
             MapemallCrawlerSpider.make_dir(self,dirname)
 
             # download image
-            raw_product_image_link=MapemallCrawlerSpider.split_image_url(self,url=raw_product_image_link)
-            image_filename=MapemallCrawlerSpider.split_image_filename(self,url=raw_product_image_link)
-            image_filename='m_'+image_filename
-            MapemallCrawlerSpider.download_images(self,dirname, raw_product_image_link, image_filename)
+            raw_product_image_link = MapemallCrawlerSpider.split_image_url(self, raw_product_image_link)
+            image_filename = MapemallCrawlerSpider.split_image_filename(self, raw_product_image_link)
+            MapemallCrawlerSpider.download_images(self, dirname, raw_product_image_link, image_filename)
 
             # storing item
             yield CrawlingECommerceItem (
@@ -84,13 +83,10 @@ class MapemallCrawlerSpider(scrapy.Spider):
 
         self.driver.close()
 
-    def cleaning_data_product_price(self,product_price):
-        txt=product_price
-        price=txt.split(". ")
-        price=price[1].split(".")
-
-        price = ''.join(price)
-        return int(price)
+    def clean_product_price(self,product_price):
+        price = MapemallCrawlerSpider.split_string(self,product_price,". ")
+        price = MapemallCrawlerSpider.split_string(self,price[1],".")
+        return int(''.join(price))
 
     def make_dir(self,dirname):
         current_path = os.getcwd()
@@ -120,32 +116,29 @@ class MapemallCrawlerSpider(scrapy.Spider):
                 self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 time.sleep(timeout)
 
+    def split_string(self, text, separator):
+        text_split = str(text)
+        return text_split.split(separator)
+
     def split_image_url(self, url):
         separator = '?x-oss'
-        current_url = str(url)
-        category = current_url.split(separator)
-        return category[0]
+        result_image_url = MapemallCrawlerSpider.split_string(self, url, separator)
+        return result_image_url[0]
     
     def split_image_filename(self, url):
         separator = '/'
-
-        current_url = str(url)
-        category = current_url.split(separator)
-        return category[4]
+        result_image_filename = MapemallCrawlerSpider.split_string(self, url, separator)
+        return 'm_' + result_image_filename[4]
 
     def split_url(self, url):
         separator = 'ct='
-
-        current_url = str(url)
-        category = current_url.split(separator,1)
-        return category[1]
+        result_url = MapemallCrawlerSpider.split_string(self, url, separator)
+        return result_url[1]
 
     def split_category(self, category):
         separator = '-'
-
-        category = str(category)
-        category = category.split(separator,4)
-        return category
+        result_category = MapemallCrawlerSpider.split_string(self, category, separator)
+        return result_category
 
     def select_category_top(self):
         return "top"
@@ -167,8 +160,8 @@ class MapemallCrawlerSpider(scrapy.Spider):
         return cat.get(category,"category")
 
     def select_category(self, url):
-        argument = MapemallCrawlerSpider.split_url(self,url = url)
-        categories = MapemallCrawlerSpider.split_category(self,category=argument)
+        argument = MapemallCrawlerSpider.split_url(self, url)
+        categories = MapemallCrawlerSpider.split_category(self, argument)
         
         category = {
             '8': MapemallCrawlerSpider.select_category_top(self),
