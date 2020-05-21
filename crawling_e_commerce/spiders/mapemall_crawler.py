@@ -28,15 +28,7 @@ class MapemallCrawlerSpider(scrapy.Spider):
         self.driver.get(response.url)
 
         # scroll page
-        totalPages = int(self.driver.execute_script(" return document.getElementById('totalPages').value"))
-        for page in range(1,totalPages):
-            view_more = '//*[(@class="load-more")]//div[not(contains(@style,"display:none"))]'
-
-            try:
-                self.driver.find_element_by_xpath(view_more).click()
-            except ElementNotInteractableException:
-                self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                time.sleep(5)
+        MapemallCrawlerSpider.scroll(self,5)
 
         # item containers for storing product
         items = CrawlingECommerceItem()
@@ -116,19 +108,17 @@ class MapemallCrawlerSpider(scrapy.Spider):
         with open('{dirname}/{suffix}.jpg'.format(dirname=dirname, suffix=suffix), 'wb') as out_file:
             shutil.copyfileobj(image.raw, out_file)
     
-    def scroll(self, driver, timeout):
+    def scroll(self, timeout):
         scroll_pause_time = timeout
+        totalPages = int(self.driver.execute_script(" return document.getElementById('totalPages').value"))
 
-        while True:
+        for page in range(1,totalPages):
             view_more = '//*[(@class="load-more")]//div[not(contains(@style,"display:none"))]'
-
             try:
-                driver.find_element_by_xpath(view_more).click()
+                self.driver.find_element_by_xpath(view_more).click()
             except ElementNotInteractableException:
-                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                # time.sleep(scroll_pause_time)
-            else: 
-                break
+                self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                time.sleep(timeout)
 
     def split_image_url(self, url):
         separator = '?x-oss'
