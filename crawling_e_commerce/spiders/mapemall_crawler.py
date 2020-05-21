@@ -69,7 +69,7 @@ class MapemallCrawlerSpider(scrapy.Spider):
             # download image
             raw_product_image_link = MapemallCrawlerSpider.split_image_url(self, raw_product_image_link)
             image_filename = MapemallCrawlerSpider.split_image_filename(self, raw_product_image_link)
-            # MapemallCrawlerSpider.download_images(self, dirname, raw_product_image_link, image_filename)
+            MapemallCrawlerSpider.download_images(self, dirname, raw_product_image_link, image_filename)
 
             # storing item
             yield CrawlingECommerceItem (
@@ -79,7 +79,7 @@ class MapemallCrawlerSpider(scrapy.Spider):
                 product_url = product_link,
                 product_category = product_category,
                 product_image_url = raw_product_image_link,
-                product_image = image_filename+'.jpg'
+                product_image = image_filename + '.jpg'
             )
 
         self.driver.close()
@@ -97,7 +97,7 @@ class MapemallCrawlerSpider(scrapy.Spider):
 
     def download_images(self,dirname, link, raw_product_name):
         response = requests.get(link, stream=True)
-        MapemallCrawlerSpider.save_image_to_file(self,response, dirname, raw_product_name)
+        MapemallCrawlerSpider.save_image_to_file(self, response, dirname, raw_product_name)
         time.sleep(3)
         del response
 
@@ -145,7 +145,7 @@ class MapemallCrawlerSpider(scrapy.Spider):
             '118': Category.select_bottom(self)
         }
         
-        return cat.get(category,"category")
+        return cat.get(category, "category")
 
     def select_category(self, url):
         argument = MapemallCrawlerSpider.split_url(self, url)
@@ -159,4 +159,4 @@ class MapemallCrawlerSpider(scrapy.Spider):
             '13': MapemallCrawlerSpider.select_category_jeans(self,category= categories[3])
         }
         
-        return category.get(categories[2],"category")
+        return category.get(categories[2], "category")
