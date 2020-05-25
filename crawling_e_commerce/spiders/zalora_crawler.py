@@ -4,6 +4,8 @@ import csv
 import os
 import logging
 import time
+import requests
+import shutil
 
 from selenium import webdriver
 from selenium.webdriver import Chrome
@@ -68,9 +70,14 @@ class ZaloraCrawlerSpider(scrapy.Spider):
             # select category
             product_category = ZaloraCrawlerSpider.select_category(self, response.request.url)
 
+            # create image directory
+            dirname = 'images'
+            ZaloraCrawlerSpider.make_dir(self, dirname)
+
             # download image
             raw_product_image_link = ZaloraCrawlerSpider.split_image_url(self, raw_product_image_link)
             image_filename = ZaloraCrawlerSpider.split_image_filename(self, raw_product_image_link)
+            ZaloraCrawlerSpider.download_images(self, dirname, raw_product_image_link, image_filename)
 
             # storing item
             yield CrawlingECommerceItem (
@@ -89,6 +96,22 @@ class ZaloraCrawlerSpider(scrapy.Spider):
         price = SplitString.action(self,product_price,"Rp ")
         price = SplitString.action(self,price[1],".")
         return int(''.join(price))
+
+    def make_dir(self,dirname):
+        current_path = os.getcwd()
+        path = os.path.join(current_path, dirname)
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+    def download_images(self,dirname, link, raw_product_name):
+        response = requests.get(link, stream=True)
+        ZaloraCrawlerSpider.save_image_to_file(self, response, dirname, raw_product_name)
+        time.sleep(3)
+        del response
+
+    def save_image_to_file(self,image, dirname, suffix):
+        with open('{dirname}/{suffix}.jpg'.format(dirname=dirname, suffix=suffix), 'wb') as out_file:
+            shutil.copyfileobj(image.raw, out_file)
 
     def split_image_url(self, url):
         separator = 'fff)/'
