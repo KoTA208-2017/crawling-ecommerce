@@ -3,9 +3,11 @@ import scrapy
 import csv
 import os
 import logging
+import time
 
 from selenium import webdriver
 from selenium.webdriver import Chrome
+from selenium.common.exceptions import NoSuchElementException
 from ..items import CrawlingECommerceItem
 from ..split_string import SplitString
 from ..category import Category
@@ -18,7 +20,7 @@ class ZaloraCrawlerSpider(scrapy.Spider):
     options.add_argument('window-size=1200x600')
 
     def __init__(self):
-        self.start_urls = ['https://www.zalora.co.id/women/pakaian/?category_id=18']
+        self.start_urls = ['https://www.zalora.co.id/women/pakaian/?page=2&category_id=18']
         self.driver = webdriver.Chrome(chrome_options=ZaloraCrawlerSpider.options)
 
     def parse(self, response):
@@ -34,11 +36,16 @@ class ZaloraCrawlerSpider(scrapy.Spider):
             # Defining the XPaths
             XPATH_PRODUCT_LINK='.//a[@class="b-catalogList__itmLink itm-link"]'
             XPATH_PRODUCT_NAME='.//em'
+            XPATH_PRODUCT_SPECIAL_PRICE='.//span[@class="b-catalogList__itmPrice special"]'
             XPATH_PRODUCT_PRICE='.//span[@class="b-catalogList__itmPrice special"]'
             XPATH_PRODUCT_IMAGE_LINK='.//img[@class="b-catalogList__itm-img b-catalogList__itm-img"]'
 
+            try:
+                raw_product_price = product.find_element_by_xpath(XPATH_PRODUCT_SPECIAL_PRICE).text
+            except NoSuchElementException:
+                raw_product_price = product.find_element_by_xpath(XPATH_PRODUCT_PRICE).text
+
             raw_product_name = product.find_element_by_xpath(XPATH_PRODUCT_NAME).text
-            raw_product_price = product.find_element_by_xpath(XPATH_PRODUCT_PRICE).text
             raw_product_image_link = product.find_element_by_xpath(XPATH_PRODUCT_IMAGE_LINK).get_attribute("src")
             raw_product_link = product.find_element_by_xpath(XPATH_PRODUCT_LINK).get_attribute("href")
             
