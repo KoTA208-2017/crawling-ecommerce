@@ -39,11 +39,11 @@ class ZaloraCrawlerSpider(scrapy.Spider):
         # iterating over search results
         for product in products:
             # Defining the XPaths
-            XPATH_PRODUCT_LINK='.//a[@class="b-catalogList__itmLink itm-link"]'
-            XPATH_PRODUCT_NAME='.//em'
-            XPATH_PRODUCT_SPECIAL_PRICE='.//span[@class="b-catalogList__itmPrice special"]'
-            XPATH_PRODUCT_PRICE='.//span[@class="b-catalogList__itmPrice"]'
-            XPATH_PRODUCT_IMAGE_LINK='.//img[@class="b-catalogList__itm-img b-catalogList__itm-img"]'
+            XPATH_PRODUCT_LINK = './/a[@class="b-catalogList__itmLink itm-link"]'
+            XPATH_PRODUCT_NAME = './/em'
+            XPATH_PRODUCT_SPECIAL_PRICE = './/span[@class="b-catalogList__itmPrice special"]'
+            XPATH_PRODUCT_PRICE = './/span[@class="b-catalogList__itmPrice"]'
+            XPATH_PRODUCT_IMAGE_LINK = './/img[@class="b-catalogList__itm-img b-catalogList__itm-img"]'
 
             try:
                 raw_product_price = product.find_element_by_xpath(XPATH_PRODUCT_SPECIAL_PRICE).text
@@ -57,13 +57,13 @@ class ZaloraCrawlerSpider(scrapy.Spider):
             logging.info("image link %s", raw_product_image_link)
 
             # cleaning the data
-            product_name=''.join(raw_product_name).strip(
+            product_name = ''.join(raw_product_name).strip(
             ) if raw_product_name else None
-            product_price=''.join(raw_product_price).strip(
+            product_price = ''.join(raw_product_price).strip(
             ) if raw_product_price else None
-            product_image_link=''.join(raw_product_image_link).strip(
+            product_image_link = ''.join(raw_product_image_link).strip(
             ) if raw_product_image_link else None
-            product_link=''.join(raw_product_link).strip(
+            product_link = ''.join(raw_product_link).strip(
             ) if raw_product_link else None
             product_price = ZaloraCrawlerSpider.clean_product_price(self,product_price)
 
