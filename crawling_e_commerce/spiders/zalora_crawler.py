@@ -25,3 +25,6 @@ class ZaloraCrawlerSpider(scrapy.Spider):
         """Function to process clothes category results page"""
         product_category=response.meta["category_text"]
         products=response.xpath('//*[(@class="b-catalogList__itm hasOverlay unit size1of3")]')
+
+        # item containers for storing product
+        items = CrawlingECommerceItem()
