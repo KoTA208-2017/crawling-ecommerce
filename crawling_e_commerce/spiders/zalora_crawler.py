@@ -4,9 +4,10 @@ import csv
 import os
 import logging
 
-from ..items import CrawlingECommerceItem
 from selenium import webdriver
 from selenium.webdriver import Chrome
+from ..items import CrawlingECommerceItem
+from ..split_string import SplitString
 
 class ZaloraCrawlerSpider(scrapy.Spider):
     name = 'zalora_crawler'
@@ -51,6 +52,7 @@ class ZaloraCrawlerSpider(scrapy.Spider):
             ) if raw_product_image_link else None
             product_link=''.join(raw_product_link).strip(
             ) if raw_product_link else None
+            product_price = ZaloraCrawlerSpider.clean_product_price(self,product_price)
 
             # storing item
             yield CrawlingECommerceItem (
@@ -62,3 +64,10 @@ class ZaloraCrawlerSpider(scrapy.Spider):
                 product_image_url = raw_product_image_link,
                 product_image = '.jpg'
             )
+
+        self.driver.close()
+
+    def clean_product_price(self,product_price):
+        price = SplitString.action(self,product_price,"Rp ")
+        price = SplitString.action(self,price[1],".")
+        return int(''.join(price))
