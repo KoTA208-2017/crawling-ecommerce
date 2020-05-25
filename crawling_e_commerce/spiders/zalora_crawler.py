@@ -31,13 +31,16 @@ class ZaloraCrawlerSpider(scrapy.Spider):
         # item containers for storing product
         items = CrawlingECommerceItem()
 
+        # wait to scoll page
+        time.sleep(30)
+
         # iterating over search results
         for product in products:
             # Defining the XPaths
             XPATH_PRODUCT_LINK='.//a[@class="b-catalogList__itmLink itm-link"]'
             XPATH_PRODUCT_NAME='.//em'
             XPATH_PRODUCT_SPECIAL_PRICE='.//span[@class="b-catalogList__itmPrice special"]'
-            XPATH_PRODUCT_PRICE='.//span[@class="b-catalogList__itmPrice special"]'
+            XPATH_PRODUCT_PRICE='.//span[@class="b-catalogList__itmPrice"]'
             XPATH_PRODUCT_IMAGE_LINK='.//img[@class="b-catalogList__itm-img b-catalogList__itm-img"]'
 
             try:
@@ -65,6 +68,10 @@ class ZaloraCrawlerSpider(scrapy.Spider):
             # select category
             product_category = ZaloraCrawlerSpider.select_category(self, response.request.url)
 
+            # download image
+            raw_product_image_link = ZaloraCrawlerSpider.split_image_url(self, raw_product_image_link)
+            image_filename = ZaloraCrawlerSpider.split_image_filename(self, raw_product_image_link)
+
             # storing item
             yield CrawlingECommerceItem (
                 site_name = 'Zalora',
@@ -73,7 +80,7 @@ class ZaloraCrawlerSpider(scrapy.Spider):
                 product_url = product_link,
                 product_category = product_category,
                 product_image_url = raw_product_image_link,
-                product_image = '.jpg'
+                product_image = image_filename
             )
 
         self.driver.close()
@@ -82,6 +89,16 @@ class ZaloraCrawlerSpider(scrapy.Spider):
         price = SplitString.action(self,product_price,"Rp ")
         price = SplitString.action(self,price[1],".")
         return int(''.join(price))
+
+    def split_image_url(self, url):
+        separator = 'fff)/'
+        result_image_url = SplitString.action(self, url, separator)
+        return result_image_url[1]
+
+    def split_image_filename(self, url):
+        separator = '-'
+        result_image_filename = SplitString.action(self, url, separator)
+        return 'z_' + result_image_filename[2]
 
     def split_url(self, url):
         separator = 'id='
