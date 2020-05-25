@@ -8,6 +8,7 @@ from selenium import webdriver
 from selenium.webdriver import Chrome
 from ..items import CrawlingECommerceItem
 from ..split_string import SplitString
+from ..category import Category
 
 class ZaloraCrawlerSpider(scrapy.Spider):
     name = 'zalora_crawler'
@@ -41,7 +42,7 @@ class ZaloraCrawlerSpider(scrapy.Spider):
             raw_product_image_link = product.find_element_by_xpath(XPATH_PRODUCT_IMAGE_LINK).get_attribute("src")
             raw_product_link = product.find_element_by_xpath(XPATH_PRODUCT_LINK).get_attribute("href")
             
-            print("!print" + raw_product_image_link)
+            logging.info("image link %s", raw_product_image_link)
 
             # cleaning the data
             product_name=''.join(raw_product_name).strip(
@@ -54,13 +55,16 @@ class ZaloraCrawlerSpider(scrapy.Spider):
             ) if raw_product_link else None
             product_price = ZaloraCrawlerSpider.clean_product_price(self,product_price)
 
+            # select category
+            product_category = ZaloraCrawlerSpider.select_category(self, response.request.url)
+
             # storing item
             yield CrawlingECommerceItem (
                 site_name = 'Zalora',
                 product_name = product_name,
                 product_price = product_price,
                 product_url = product_link,
-                product_category = "category",
+                product_category = product_category,
                 product_image_url = raw_product_image_link,
                 product_image = '.jpg'
             )
@@ -71,3 +75,24 @@ class ZaloraCrawlerSpider(scrapy.Spider):
         price = SplitString.action(self,product_price,"Rp ")
         price = SplitString.action(self,price[1],".")
         return int(''.join(price))
+
+    def split_url(self, url):
+        separator = 'id='
+        result_url = SplitString.action(self, url, separator)
+        return result_url[1]
+
+    def select_category(self, url):
+        argument = ZaloraCrawlerSpider.split_url(self, url)
+        logging.info("argument %s", argument)
+        
+        category = {
+            '175': Category.select_top(self),
+            '704': Category.select_top(self),
+            '16': Category.select_bottom(self),
+            '18': Category.select_bottom(self),
+            '17': Category.select_bottom(self),
+            '2878': Category.select_bottom(self),
+            '25': Category.select_long(self)
+        }
+        
+        return category.get(str(argument), "category")
