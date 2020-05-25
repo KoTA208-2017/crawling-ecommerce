@@ -22,4 +22,6 @@ class ZaloraCrawlerSpider(scrapy.Spider):
                 yield scrapy.Request(url, callback = self.parse, meta = {"category_text": category_text})
 
     def parse(self, response):
-        pass
+        """Function to process clothes category results page"""
+        product_category=response.meta["category_text"]
+        products=response.xpath('//*[(@class="b-catalogList__itm hasOverlay unit size1of3")]')
