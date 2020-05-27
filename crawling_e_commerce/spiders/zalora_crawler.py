@@ -17,7 +17,6 @@ from ..category import Category
 class ZaloraCrawlerSpider(scrapy.Spider):
     name = 'zalora_crawler'
     allowed_domains = ['www.zalora.co.id']
-    start_urls = ['http://www.zalora.co.id']
     options = webdriver.ChromeOptions()
     options.add_argument('window-size=1200x600')
 
@@ -75,8 +74,8 @@ class ZaloraCrawlerSpider(scrapy.Spider):
             ZaloraCrawlerSpider.make_dir(self, dirname)
 
             # download image
-            raw_product_image_link = ZaloraCrawlerSpider.split_image_url(self, raw_product_image_link)
             image_filename = ZaloraCrawlerSpider.split_image_filename(self, raw_product_image_link)
+            raw_product_image_link = ZaloraCrawlerSpider.split_image_url(self, raw_product_image_link)
             ZaloraCrawlerSpider.download_images(self, dirname, raw_product_image_link, image_filename)
 
             # storing item
@@ -87,7 +86,7 @@ class ZaloraCrawlerSpider(scrapy.Spider):
                 product_url = product_link,
                 product_category = product_category,
                 product_image_url = raw_product_image_link,
-                product_image = image_filename
+                product_image = image_filename + '.jpg'
             )
 
         self.driver.close()
@@ -119,9 +118,11 @@ class ZaloraCrawlerSpider(scrapy.Spider):
         return result_image_url[1]
 
     def split_image_filename(self, url):
-        separator = '-'
+        separator = '.com/'
         result_image_filename = SplitString.action(self, url, separator)
-        return 'z_' + result_image_filename[2]
+        separator = '=/'
+        result_image_filename = SplitString.action(self, result_image_filename[1], separator)
+        return 'z_' + result_image_filename[0]
 
     def split_url(self, url):
         separator = 'id='
