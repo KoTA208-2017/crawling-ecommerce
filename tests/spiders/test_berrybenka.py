@@ -61,6 +61,21 @@ class BerrybenkaTest(unittest.TestCase):
         else:
             self.assertLess(len(products), 48)
 
+    def test_product_name(self):
+        # name check exists on product 
+        XPATH_PRODUCT_NAME = "//*[(@id='li-catalog')]//div[@class='catalog-detail']//div[@class='detail-left']"
+        self.assertTrue(self.is_element_present(By.XPATH, XPATH_PRODUCT_NAME))
+
+    def test_price_name(self):
+        # price check exists on product 
+        XPATH_PRODUCT_PRICE = "//*[(@id='li-catalog')]//div[@class='catalog-detail']//div[@class='detail-right']"
+        self.assertTrue(self.is_element_present(By.XPATH, XPATH_PRODUCT_PRICE))
+
+    def test_image_name(self):
+        # image check exists on product
+        XPATH_PRODUCT_IMAGE = "//*[(@id='li-catalog')]//div[@class='catalog-image']" 
+        self.assertTrue(self.is_element_present(By.XPATH, XPATH_PRODUCT_IMAGE))
+
     @classmethod
     def tearDownClass(cls):
         # close the browser window
