@@ -6,8 +6,8 @@ import logging
 
 from ..items import CrawlingECommerceItem
 
-class BerrybenkaCrawlerSpider(scrapy.Spider):
-    name = 'berrybenka_crawler'
+class BerrybenkaSpider(scrapy.Spider):
+    name = 'berrybenka'
     separator = 'n/'
     allowed_domains = ['berrybenka.com']
     start_urls = ['https://berrybenka.com']
@@ -18,14 +18,14 @@ class BerrybenkaCrawlerSpider(scrapy.Spider):
         with open(os.path.join(os.path.dirname(__file__), "../resources/berrybenka_categories.csv")) as categories:
             for category in csv.DictReader(categories):
                 category_text=category["category"]
-                url=str(BerrybenkaCrawlerSpider.start_urls[0])+"/clothing/"+category_text+"/women/0"
+                url=str(BerrybenkaSpider.start_urls[0])+"/clothing/"+category_text+"/women/0"
                 # The meta is used to send our search text into the parser as metadata
                 yield scrapy.Request(url, callback = self.parse, meta = {"category_text": category_text})
 
     def parse(self, response):
         """Function to process clothes category results page"""
         product_category=response.meta["category_text"]
-        product_category=BerrybenkaCrawlerSpider.select_category(self,product_category)
+        product_category=BerrybenkaSpider.select_category(self,product_category)
         products=response.xpath("//*[(@id='li-catalog')]")
         
         # item containers for storing product
@@ -58,9 +58,9 @@ class BerrybenkaCrawlerSpider(scrapy.Spider):
             image_link = str(raw_product_image_link[0])
             template = "https://im.berrybenka.com/assets/cache/300x456/product-overlay/_VDEGZ_2836.png"
             if(image_link == template):
-                raw_product_image_link[0] = BerrybenkaCrawlerSpider.split_url_image(self,raw_product_image_link[1])
+                raw_product_image_link[0] = BerrybenkaSpider.split_url_image(self,raw_product_image_link[1])
             else:
-                raw_product_image_link[0] = BerrybenkaCrawlerSpider.split_url_image(self,raw_product_image_link[0])
+                raw_product_image_link[0] = BerrybenkaSpider.split_url_image(self,raw_product_image_link[0])
 
             # storing item
             yield CrawlingECommerceItem (
@@ -75,12 +75,12 @@ class BerrybenkaCrawlerSpider(scrapy.Spider):
 
         next_page = response.xpath(XPATH_PRAGINATION_LINK).get()
         current_url = str(response.request.url)
-        current_url = current_url.split(BerrybenkaCrawlerSpider.separator,1)
+        current_url = current_url.split(BerrybenkaSpider.separator,1)
         number_product = int(current_url[1])
         
         if next_page is not None:
             number_product += 48
-            next_url = current_url[0] + BerrybenkaCrawlerSpider.separator + str(number_product)
+            next_url = current_url[0] + BerrybenkaSpider.separator + str(number_product)
             logging.info("current URL %s", next_url)
             yield response.follow(next_url, callback = self.parse, meta = {"category_text": product_category})
 
@@ -100,24 +100,24 @@ class BerrybenkaCrawlerSpider(scrapy.Spider):
 
     def select_category(self, categories):
         category = {
-            'culottes': BerrybenkaCrawlerSpider.select_category_bottom(self),
-            'long-pants': BerrybenkaCrawlerSpider.select_category_bottom(self),
-            'short-pants': BerrybenkaCrawlerSpider.select_category_bottom(self),
-            'jeans': BerrybenkaCrawlerSpider.select_category_bottom(self),
-            'leggings': BerrybenkaCrawlerSpider.select_category_bottom(self),
-            'skirts': BerrybenkaCrawlerSpider.select_category_bottom(self),
-            'maxi-dresses': BerrybenkaCrawlerSpider.select_category_long(self),
-            'midi-dresses': BerrybenkaCrawlerSpider.select_category_long(self),
-            'mini-dresses': BerrybenkaCrawlerSpider.select_category_long(self),
-            'jumpsuit': BerrybenkaCrawlerSpider.select_category_long(self),
-            'casual': BerrybenkaCrawlerSpider.select_category_long(self),
-            'bodycon-dress': BerrybenkaCrawlerSpider.select_category_long(self),
-            'vest': BerrybenkaCrawlerSpider.select_category_top(self),
-            'cardigans': BerrybenkaCrawlerSpider.select_category_top(self),
-            'tank-top': BerrybenkaCrawlerSpider.select_category_top(self),
-            'women-tees': BerrybenkaCrawlerSpider.select_category_top(self),
-            'women-shirts': BerrybenkaCrawlerSpider.select_category_top(self),
-            'blouse': BerrybenkaCrawlerSpider.select_category_top(self),
+            'culottes': BerrybenkaSpider.select_category_bottom(self),
+            'long-pants': BerrybenkaSpider.select_category_bottom(self),
+            'short-pants': BerrybenkaSpider.select_category_bottom(self),
+            'jeans': BerrybenkaSpider.select_category_bottom(self),
+            'leggings': BerrybenkaSpider.select_category_bottom(self),
+            'skirts': BerrybenkaSpider.select_category_bottom(self),
+            'maxi-dresses': BerrybenkaSpider.select_category_long(self),
+            'midi-dresses': BerrybenkaSpider.select_category_long(self),
+            'mini-dresses': BerrybenkaSpider.select_category_long(self),
+            'jumpsuit': BerrybenkaSpider.select_category_long(self),
+            'casual': BerrybenkaSpider.select_category_long(self),
+            'bodycon-dress': BerrybenkaSpider.select_category_long(self),
+            'vest': BerrybenkaSpider.select_category_top(self),
+            'cardigans': BerrybenkaSpider.select_category_top(self),
+            'tank-top': BerrybenkaSpider.select_category_top(self),
+            'women-tees': BerrybenkaSpider.select_category_top(self),
+            'women-shirts': BerrybenkaSpider.select_category_top(self),
+            'blouse': BerrybenkaSpider.select_category_top(self),
             
         }
         
