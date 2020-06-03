@@ -41,6 +41,11 @@ class BerrybenkaTest(unittest.TestCase):
         # check next button exists on page
         XPATH_NEXT_BUTTON = "//*[(@class='next right')]"
         self.assertTrue(self.is_element_present(By.XPATH, XPATH_NEXT_BUTTON))
+    
+    def test_product(self):
+        # check product exists on page
+        ID_PRODUCT = "li-catalog"
+        self.assertTrue(self.is_element_present(By.ID, ID_PRODUCT))
 
     @classmethod
     def tearDownClass(cls):
