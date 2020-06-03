@@ -29,7 +29,9 @@ class BerrybenkaTest(unittest.TestCase):
     
     def test_count_category_text(self):
         category_text = []
+        # open file that store category text
         with open(os.path.join(os.path.dirname(__file__), "../../crawling_e_commerce/resources/berrybenka_categories.csv")) as categories:
+            # read file
             for category in csv.DictReader(categories):
                 category_text.append(category["category"])
 
@@ -45,7 +47,7 @@ class BerrybenkaTest(unittest.TestCase):
         # close the browser window
         cls.driver.quit()
 
-    # https://www.techbeamers.com/selenium-python-test-suite-unittest/
+    # this method taken from https://www.techbeamers.com/selenium-python-test-suite-unittest/
     def is_element_present(self, how, what):
         """
         Helper method to confirm the presence of an element on page
