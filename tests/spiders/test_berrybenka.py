@@ -5,6 +5,7 @@ import os
 from selenium import webdriver
 from selenium.webdriver import Chrome
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
 
 class BerrybenkaTest(unittest.TestCase):
     @classmethod
@@ -33,6 +34,11 @@ class BerrybenkaTest(unittest.TestCase):
                 category_text.append(category["category"])
 
             self.assertEqual(15,len(category_text))
+    
+    def test_next_button(self):
+        # check next button exists on page
+        XPATH_NEXT_BUTTON = "//*[(@class='next right')]"
+        self.assertTrue(self.is_element_present(By.XPATH, XPATH_NEXT_BUTTON))
 
     @classmethod
     def tearDownClass(cls):
