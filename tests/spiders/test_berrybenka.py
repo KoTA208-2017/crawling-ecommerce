@@ -57,9 +57,9 @@ class BerrybenkaTest(unittest.TestCase):
         products = self.driver.find_elements_by_xpath(XPATH_PRODUCTS)
 
         if(self.is_element_present(By.XPATH, XPATH_NEXT_BUTTON)):
-            self.assertEqual(48, len(products))
+            self.assertEqual(len(products), 48)
         else:
-            self.assertTrue(len(products)<48)
+            self.assertLess(len(products), 48)
 
     @classmethod
     def tearDownClass(cls):
