@@ -27,7 +27,7 @@ class BerrybenkaTest(unittest.TestCase):
 
             self.assertEqual("culottes",category_text[0])
     
-    def test_count_category_text(self):
+    def test_amount_of_category_text(self):
         category_text = []
         # open file that store category text
         with open(os.path.join(os.path.dirname(__file__), "../../crawling_e_commerce/resources/berrybenka_categories.csv")) as categories:
@@ -50,7 +50,7 @@ class BerrybenkaTest(unittest.TestCase):
         ID_PRODUCT = "li-catalog"
         self.assertTrue(self.is_element_present(By.ID, ID_PRODUCT))
 
-    def test_count_product_in_a_page(self):
+    def test_amount_of_product_in_a_page(self):
         # get the xpath products and next button
         XPATH_PRODUCTS = "//*[(@id='li-catalog')]"
         XPATH_NEXT_BUTTON = "//*[(@class='next right')]"
