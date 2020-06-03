@@ -4,6 +4,7 @@ import os
 
 from selenium import webdriver
 from selenium.webdriver import Chrome
+from selenium.common.exceptions import NoSuchElementException
 
 class BerrybenkaTest(unittest.TestCase):
     @classmethod
@@ -37,6 +38,17 @@ class BerrybenkaTest(unittest.TestCase):
     def tearDownClass(cls):
         # close the browser window
         cls.driver.quit()
+
+    # https://www.techbeamers.com/selenium-python-test-suite-unittest/
+    def is_element_present(self, how, what):
+        """
+        Helper method to confirm the presence of an element on page
+        :params how: By locator type
+        :params what: locator value
+        """
+        try: self.driver.find_element(by=how, value=what)
+        except NoSuchElementException: return False
+        return True
         
 if __name__ == '__main__':
     unittest.main()
