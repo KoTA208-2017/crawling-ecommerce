@@ -40,7 +40,10 @@ class BerrybenkaTest(unittest.TestCase):
     def test_next_button(self):
         # check next button exists on page
         XPATH_NEXT_BUTTON = "//*[(@class='next right')]"
-        self.assertTrue(self.is_element_present(By.XPATH, XPATH_NEXT_BUTTON))
+        if(self.is_element_present(By.XPATH, XPATH_NEXT_BUTTON)):
+            self.assertTrue(self.is_element_present(By.XPATH, XPATH_NEXT_BUTTON))
+        else:
+            self.assertFalse(self.is_element_present(By.XPATH, XPATH_NEXT_BUTTON))
     
     def test_product(self):
         # check product exists on page
