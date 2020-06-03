@@ -6,13 +6,14 @@ from selenium import webdriver
 from selenium.webdriver import Chrome
 
 class BerrybenkaTest(unittest.TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         # create a new Chrome session
-        self.driver = webdriver.Chrome()
-        self.driver.implicitly_wait(30)
-        self.driver.maximize_window()
+        cls.driver = webdriver.Chrome()
+        cls.driver.implicitly_wait(30)
+        cls.driver.maximize_window()
         # navigate to the application home page
-        self.driver.get("https://berrybenka.com/clothing/culottes/women/0")
+        cls.driver.get("https://berrybenka.com/clothing/long-pants/women/0")
 
     def test_read_category_text(self):
         category_text = []
@@ -32,9 +33,10 @@ class BerrybenkaTest(unittest.TestCase):
 
             self.assertEqual(15,len(category_text))
 
-    def tearDown(self):
+    @classmethod
+    def tearDownClass(cls):
         # close the browser window
-        self.driver.quit()
+        cls.driver.quit()
         
 if __name__ == '__main__':
     unittest.main()
