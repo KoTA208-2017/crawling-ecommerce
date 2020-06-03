@@ -15,11 +15,14 @@ class BerrybenkaTest(unittest.TestCase):
         self.driver.get("https://berrybenka.com/clothing/culottes/women/0")
 
     def test_read_category_text(self):
+        category_text = []
         # open file that store category text
         with open(os.path.join(os.path.dirname(__file__), "../../crawling_e_commerce/resources/berrybenka_categories.csv")) as categories:
             # read file
             for category in csv.DictReader(categories):
-                self.assertEqual(1,len(category))
+                category_text.append(category["category"])
+
+            self.assertEqual("culottes",category_text[0])
     
     def test_count_category_text(self):
         category_text = []
