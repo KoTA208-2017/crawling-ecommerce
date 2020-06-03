@@ -50,6 +50,17 @@ class BerrybenkaTest(unittest.TestCase):
         ID_PRODUCT = "li-catalog"
         self.assertTrue(self.is_element_present(By.ID, ID_PRODUCT))
 
+    def test_count_product_in_a_page(self):
+        # get the xpath products and next button
+        XPATH_PRODUCTS = "//*[(@id='li-catalog')]"
+        XPATH_NEXT_BUTTON = "//*[(@class='next right')]"
+        products = self.driver.find_elements_by_xpath(XPATH_PRODUCTS)
+
+        if(self.is_element_present(By.XPATH, XPATH_NEXT_BUTTON)):
+            self.assertEqual(48, len(products))
+        else:
+            self.assertTrue(len(products)<48)
+
     @classmethod
     def tearDownClass(cls):
         # close the browser window
