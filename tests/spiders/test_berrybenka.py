@@ -20,6 +20,14 @@ class BerrybenkaTest(unittest.TestCase):
             # read file
             for category in csv.DictReader(categories):
                 self.assertEqual(1,len(category))
+    
+    def test_count_category_text(self):
+        category_text = []
+        with open(os.path.join(os.path.dirname(__file__), "../../crawling_e_commerce/resources/berrybenka_categories.csv")) as categories:
+            for category in csv.DictReader(categories):
+                category_text.append(category["category"])
+
+            self.assertEqual(15,len(category_text))
 
     def tearDown(self):
         # close the browser window
