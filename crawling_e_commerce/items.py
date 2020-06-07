@@ -7,7 +7,7 @@
 
 import scrapy
 
-class CrawlingECommerceItem(scrapy.Item):
+class EcommerceItem(scrapy.Item):
     site_name = scrapy.Field()
     product_name = scrapy.Field()
     product_price = scrapy.Field()

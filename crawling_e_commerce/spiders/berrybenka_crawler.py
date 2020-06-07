@@ -4,7 +4,7 @@ import csv
 import os
 import logging
 
-from ..items import CrawlingECommerceItem
+from ..items import EcommerceItem
 
 class BerrybenkaSpider(scrapy.Spider):
     name = 'berrybenka'
@@ -29,7 +29,7 @@ class BerrybenkaSpider(scrapy.Spider):
         products=response.xpath("//*[(@id='li-catalog')]")
         
         # item containers for storing product
-        items = CrawlingECommerceItem()
+        items = EcommerceItem()
         
         # iterating over search results
         for product in products:
@@ -63,7 +63,7 @@ class BerrybenkaSpider(scrapy.Spider):
                 raw_product_image_link[0] = BerrybenkaSpider.split_url_image(self,raw_product_image_link[0])
 
             # storing item
-            yield CrawlingECommerceItem (
+            yield EcommerceItem (
                 product_name=product_name,
                 product_price=product_price,
                 product_url=product_link,

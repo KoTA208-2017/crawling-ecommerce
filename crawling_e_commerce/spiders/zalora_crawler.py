@@ -10,7 +10,7 @@ import shutil
 from selenium import webdriver
 from selenium.webdriver import Chrome
 from selenium.common.exceptions import NoSuchElementException
-from ..items import CrawlingECommerceItem
+from ..items import EcommerceItem
 from ..split_string import SplitString
 from ..category import Category
 
@@ -30,7 +30,7 @@ class ZaloraCrawlerSpider(scrapy.Spider):
         products=self.driver.find_elements_by_xpath('//*[(@class="b-catalogList__itm hasOverlay unit size1of3")]')
 
         # item containers for storing product
-        items = CrawlingECommerceItem()
+        items = EcommerceItem()
 
         # wait to scoll page
         time.sleep(30)
@@ -79,7 +79,7 @@ class ZaloraCrawlerSpider(scrapy.Spider):
             ZaloraCrawlerSpider.download_images(self, dirname, raw_product_image_link, image_filename)
 
             # storing item
-            yield CrawlingECommerceItem (
+            yield EcommerceItem (
                 site_name = 'Zalora',
                 product_name = product_name,
                 product_price = product_price,
