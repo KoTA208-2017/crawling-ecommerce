@@ -25,7 +25,7 @@ class BerrybenkaSpider(scrapy.Spider):
     def parse(self, response):
         """Function to process clothes category results page"""
         product_category=response.meta["category_text"]
-        product_category = EcommerceItem.select_category_berrybenka(self, product_category)
+        product_category = EcommerceItem.get_category_berrybenka(self, product_category)
         products=response.xpath("//*[(@id='li-catalog')]")
         
         # item containers for storing product
