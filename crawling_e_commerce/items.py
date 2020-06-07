@@ -25,6 +25,13 @@ class EcommerceItem(scrapy.Item):
     def get_category_bottom(self):
         return "bottom"
 
+    def get_category(self, categories, site_name):
+        ecommerce = {
+            'Berrybenka': EcommerceItem.get_category_berrybenka(self, categories)
+        }
+        
+        return ecommerce.get(site_name,"site_name")
+
     def get_category_berrybenka(self, categories):
         category = {
             'culottes': EcommerceItem.get_category_bottom(self),
