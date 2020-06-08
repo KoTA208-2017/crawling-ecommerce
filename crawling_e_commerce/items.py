@@ -12,6 +12,15 @@ def split_string(self, text, separator):
     result_url = txt.split(separator)
     return result_url
 
+def category_top(self):
+    return "top"
+
+def category_long(self):
+    return "long"
+
+def category_bottom(self):
+    return "bottom"
+
 class EcommerceItem(scrapy.Item):
     site_name = scrapy.Field()
     product_name = scrapy.Field()
@@ -21,15 +30,6 @@ class EcommerceItem(scrapy.Item):
     product_image_url = scrapy.Field()
     product_image = scrapy.Field()
     image_urls = scrapy.Field()
-
-    def get_category_top(self):
-        return "top"
-
-    def get_category_long(self):
-        return "long"
-    
-    def get_category_bottom(self):
-        return "bottom"
 
     def get_category(self, url, site_name):
         print("!sitename " + site_name)
@@ -44,34 +44,34 @@ class EcommerceItem(scrapy.Item):
 
     def get_category_berrybenka(self, category):
         categories = {
-            'culottes': EcommerceItem.get_category_bottom(self),
-            'long-pants': EcommerceItem.get_category_bottom(self),
-            'short-pants': EcommerceItem.get_category_bottom(self),
-            'jeans': EcommerceItem.get_category_bottom(self),
-            'leggings': EcommerceItem.get_category_bottom(self),
-            'skirts': EcommerceItem.get_category_bottom(self),
-            'maxi-dresses': EcommerceItem.get_category_long(self),
-            'midi-dresses': EcommerceItem.get_category_long(self),
-            'mini-dresses': EcommerceItem.get_category_long(self),
-            'jumpsuit': EcommerceItem.get_category_long(self),
-            'casual': EcommerceItem.get_category_long(self),
-            'bodycon-dress': EcommerceItem.get_category_long(self),
-            'vest': EcommerceItem.get_category_top(self),
-            'cardigans': EcommerceItem.get_category_top(self),
-            'tank-top': EcommerceItem.get_category_top(self),
-            'women-tees': EcommerceItem.get_category_top(self),
-            'women-shirts': EcommerceItem.get_category_top(self),
-            'blouse': EcommerceItem.get_category_top(self)
+            'culottes': category_bottom(self),
+            'long-pants': category_bottom(self),
+            'short-pants': category_bottom(self),
+            'jeans': category_bottom(self),
+            'leggings': category_bottom(self),
+            'skirts': category_bottom(self),
+            'maxi-dresses': category_long(self),
+            'midi-dresses': category_long(self),
+            'mini-dresses': category_long(self),
+            'jumpsuit': category_long(self),
+            'casual': category_long(self),
+            'bodycon-dress': category_long(self),
+            'vest': category_top(self),
+            'cardigans': category_top(self),
+            'tank-top': category_top(self),
+            'women-tees': category_top(self),
+            'women-shirts': category_top(self),
+            'blouse': category_top(self)
         }
         
         return categories.get(str(category),"category")
 
     def get_category_jeans_mapemall(self, category):
         categories = {
-            '113': EcommerceItem.get_category_top(self),
-            '119': EcommerceItem.get_category_top(self),
-            '121': EcommerceItem.get_category_top(self),
-            '118': EcommerceItem.get_category_bottom(self)
+            '113': category_top(self),
+            '119': category_top(self),
+            '121': category_top(self),
+            '118': category_bottom(self)
         }
         
         return categories.get(category, "category")
@@ -81,10 +81,10 @@ class EcommerceItem(scrapy.Item):
         categories = split_string(self, text=argument[1], separator="-")
         
         category = {
-            '8': EcommerceItem.get_category_top(self),
-            '9': EcommerceItem.get_category_top(self),
-            '10': EcommerceItem.get_category_bottom(self),
-            '11': EcommerceItem.get_category_long(self),
+            '8': category_top(self),
+            '9': category_top(self),
+            '10': category_bottom(self),
+            '11': category_long(self),
             '13': EcommerceItem.get_category_jeans_mapemall(self, category=categories[3])
         }
         
@@ -94,13 +94,13 @@ class EcommerceItem(scrapy.Item):
         argument = split_string(self, text=url, separator="id=")
 
         categories = {
-            '175': EcommerceItem.get_category_top(self),
-            '704': EcommerceItem.get_category_top(self),
-            '16': EcommerceItem.get_category_bottom(self),
-            '18': EcommerceItem.get_category_bottom(self),
-            '17': EcommerceItem.get_category_bottom(self),
-            '2878': EcommerceItem.get_category_bottom(self),
-            '25': EcommerceItem.get_category_long(self)
+            '175': category_top(self),
+            '704': category_top(self),
+            '16': category_bottom(self),
+            '18': category_bottom(self),
+            '17': category_bottom(self),
+            '2878': category_bottom(self),
+            '25': category_long(self)
         }
         
         return categories.get(str(argument[1]), "category")
