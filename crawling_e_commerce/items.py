@@ -7,6 +7,11 @@
 
 import scrapy
 
+def split_string(self, text, separator):
+    txt = str(text)
+    result_url = txt.split(separator)
+    return result_url
+
 class EcommerceItem(scrapy.Item):
     site_name = scrapy.Field()
     product_name = scrapy.Field()
@@ -72,8 +77,8 @@ class EcommerceItem(scrapy.Item):
         return categories.get(category, "category")
 
     def get_category_mapemall(self, url):
-        argument = EcommerceItem.split_string(self, text=url, separator="ct=")
-        categories = EcommerceItem.split_string(self, text=argument[1], separator="-")
+        argument = split_string(self, text=url, separator="ct=")
+        categories = split_string(self, text=argument[1], separator="-")
         
         category = {
             '8': EcommerceItem.get_category_top(self),
@@ -86,7 +91,7 @@ class EcommerceItem(scrapy.Item):
         return category.get(categories[2], "category")
 
     def get_category_zalora(self, url):
-        argument = EcommerceItem.split_string(self, text=url, separator="id=")
+        argument = split_string(self, text=url, separator="id=")
 
         categories = {
             '175': EcommerceItem.get_category_top(self),
