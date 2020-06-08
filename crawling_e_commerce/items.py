@@ -15,6 +15,7 @@ class EcommerceItem(scrapy.Item):
     product_category = scrapy.Field()
     product_image_url = scrapy.Field()
     product_image = scrapy.Field()
+    image_urls = scrapy.Field()
 
     def get_category_top(self):
         return "top"
@@ -25,15 +26,19 @@ class EcommerceItem(scrapy.Item):
     def get_category_bottom(self):
         return "bottom"
 
-    def get_category(self, categories, site_name):
-        ecommerce = {
-            'Berrybenka': EcommerceItem.get_category_berrybenka(self, categories)
-        }
-        
-        return ecommerce.get(site_name,"site_name")
+    def get_category(self, url, site_name):
+        print("!sitename " + site_name)
+        if(site_name == "Zalora"):
+            return EcommerceItem.get_category_zalora(self, url)
+        elif(site_name == "Berrybenka"):
+            return EcommerceItem.get_category_berrybenka(self, url)
+        elif(site_name == "Mapemall"):
+            return EcommerceItem.get_category_mapemall(self, url)
+        else:
+            return None
 
-    def get_category_berrybenka(self, categories):
-        category = {
+    def get_category_berrybenka(self, category):
+        categories = {
             'culottes': EcommerceItem.get_category_bottom(self),
             'long-pants': EcommerceItem.get_category_bottom(self),
             'short-pants': EcommerceItem.get_category_bottom(self),
@@ -54,4 +59,10 @@ class EcommerceItem(scrapy.Item):
             'blouse': EcommerceItem.get_category_top(self)
         }
         
-        return category.get(categories,"category")
+        return categories.get(str(category),"category")
+
+    def get_category_mapemall(self, url):
+        pass
+
+    def get_category_zalora(self, url):
+        pass

@@ -15,7 +15,7 @@ from ..split_string import SplitString
 from ..category import Category
 
 class MapemallCrawlerSpider(scrapy.Spider):
-    name = 'mapemall_crawler'
+    name = 'mapemall'
     allowed_domains = ['www.mapemall.com']
     options = webdriver.ChromeOptions()
     options.add_argument('window-size=1200x600')
@@ -26,6 +26,7 @@ class MapemallCrawlerSpider(scrapy.Spider):
 
     def parse(self, response):
         """Function to process clothes results page"""
+        site_name = "Mapemall"
         self.driver.get(response.url)
 
         # scroll page
@@ -60,7 +61,7 @@ class MapemallCrawlerSpider(scrapy.Spider):
             product_price = MapemallCrawlerSpider.clean_product_price(self,product_price)
             
             # select category
-            product_category = MapemallCrawlerSpider.select_category(self, url=response.request.url)
+            product_category = EcommerceItem.get_category(self, response.request.url, site_name)
 
             # create image directory
             dirname = 'images'
@@ -73,7 +74,7 @@ class MapemallCrawlerSpider(scrapy.Spider):
 
             # storing item
             yield EcommerceItem (
-                site_name = 'Mapemall',
+                site_name = site_name,
                 product_name = product_name,
                 product_price = product_price,
                 product_url = product_link,
@@ -126,37 +127,3 @@ class MapemallCrawlerSpider(scrapy.Spider):
         separator = '/'
         result_image_filename = SplitString.action(self, url, separator)
         return 'm_' + result_image_filename[4]
-
-    def split_url(self, url):
-        separator = 'ct='
-        result_url = SplitString.action(self, url, separator)
-        return result_url[1]
-
-    def split_category(self, category):
-        separator = '-'
-        result_category = SplitString.action(self, category, separator)
-        return result_category
-
-    def select_category_jeans(self, category):
-        cat = {
-            '113': Category.select_top(self),
-            '119': Category.select_top(self),
-            '121': Category.select_top(self),
-            '118': Category.select_bottom(self)
-        }
-        
-        return cat.get(category, "category")
-
-    def select_category(self, url):
-        argument = MapemallCrawlerSpider.split_url(self, url)
-        categories = MapemallCrawlerSpider.split_category(self, argument)
-        
-        category = {
-            '8': Category.select_top(self),
-            '9': Category.select_top(self),
-            '10': Category.select_bottom(self),
-            '11': Category.select_long(self),
-            '13': MapemallCrawlerSpider.select_category_jeans(self,category= categories[3])
-        }
-        
-        return category.get(categories[2], "category")
