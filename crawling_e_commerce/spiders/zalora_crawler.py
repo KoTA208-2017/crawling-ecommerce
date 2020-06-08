@@ -10,12 +10,12 @@ import shutil
 from selenium import webdriver
 from selenium.webdriver import Chrome
 from selenium.common.exceptions import NoSuchElementException
-from ..items import CrawlingECommerceItem
+from ..items import EcommerceItem
 from ..split_string import SplitString
 from ..category import Category
 
 class ZaloraCrawlerSpider(scrapy.Spider):
-    name = 'zalora_crawler'
+    name = 'zalora'
     allowed_domains = ['www.zalora.co.id']
     options = webdriver.ChromeOptions()
     options.add_argument('window-size=1200x600')
@@ -26,11 +26,12 @@ class ZaloraCrawlerSpider(scrapy.Spider):
 
     def parse(self, response):
         """Function to process clothes category results page"""
+        site_name = "Zalora"
         self.driver.get(response.url)
         products=self.driver.find_elements_by_xpath('//*[(@class="b-catalogList__itm hasOverlay unit size1of3")]')
 
         # item containers for storing product
-        items = CrawlingECommerceItem()
+        items = EcommerceItem()
 
         # wait to scoll page
         time.sleep(30)
@@ -67,7 +68,7 @@ class ZaloraCrawlerSpider(scrapy.Spider):
             product_price = ZaloraCrawlerSpider.clean_product_price(self,product_price)
 
             # select category
-            product_category = ZaloraCrawlerSpider.select_category(self, response.request.url)
+            product_category = EcommerceItem.get_category(self, response.request.url, site_name)
 
             # create image directory
             dirname = 'images'
@@ -79,8 +80,8 @@ class ZaloraCrawlerSpider(scrapy.Spider):
             ZaloraCrawlerSpider.download_images(self, dirname, raw_product_image_link, image_filename)
 
             # storing item
-            yield CrawlingECommerceItem (
-                site_name = 'Zalora',
+            yield EcommerceItem (
+                site_name = site_name,
                 product_name = product_name,
                 product_price = product_price,
                 product_url = product_link,
