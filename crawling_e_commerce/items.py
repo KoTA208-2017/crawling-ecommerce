@@ -61,8 +61,41 @@ class EcommerceItem(scrapy.Item):
         
         return categories.get(str(category),"category")
 
+    def get_category_jeans_mapemall(self, category):
+        categories = {
+            '113': EcommerceItem.get_category_top(self),
+            '119': EcommerceItem.get_category_top(self),
+            '121': EcommerceItem.get_category_top(self),
+            '118': EcommerceItem.get_category_bottom(self)
+        }
+        
+        return categories.get(category, "category")
+
     def get_category_mapemall(self, url):
-        pass
+        argument = EcommerceItem.split_string(self, text=url, separator="ct=")
+        categories = EcommerceItem.split_string(self, text=argument[1], separator="-")
+        
+        category = {
+            '8': EcommerceItem.get_category_top(self),
+            '9': EcommerceItem.get_category_top(self),
+            '10': EcommerceItem.get_category_bottom(self),
+            '11': EcommerceItem.get_category_long(self),
+            '13': EcommerceItem.get_category_jeans_mapemall(self, category=categories[3])
+        }
+        
+        return category.get(categories[2], "category")
 
     def get_category_zalora(self, url):
-        pass
+        argument = EcommerceItem.split_string(self, text=url, separator="id=")
+
+        categories = {
+            '175': EcommerceItem.get_category_top(self),
+            '704': EcommerceItem.get_category_top(self),
+            '16': EcommerceItem.get_category_bottom(self),
+            '18': EcommerceItem.get_category_bottom(self),
+            '17': EcommerceItem.get_category_bottom(self),
+            '2878': EcommerceItem.get_category_bottom(self),
+            '25': EcommerceItem.get_category_long(self)
+        }
+        
+        return categories.get(str(argument[1]), "category")
