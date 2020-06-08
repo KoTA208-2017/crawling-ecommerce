@@ -104,3 +104,9 @@ class EcommerceItem(scrapy.Item):
         }
         
         return categories.get(str(argument[1]), "category")
+
+    def clean_price(self, price, separator):
+        argument = split_string(self, text=price, separator=separator)
+        new_price = split_string(self, text=argument[1], separator=".")
+        
+        return int(''.join(new_price))

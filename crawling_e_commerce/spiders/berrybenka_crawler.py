@@ -50,6 +50,7 @@ class BerrybenkaSpider(scrapy.Spider):
             ) if raw_product_name else None
             product_price = ''.join(raw_product_price).strip(
             ) if raw_product_price else None
+            product_price = EcommerceItem.clean_price(self, product_price, "IDR")
             product_image_link = ''.join(raw_product_image_link).strip(
             ) if raw_product_image_link else None
             product_link = ''.join(raw_product_link).strip(

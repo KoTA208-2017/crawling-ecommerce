@@ -54,11 +54,11 @@ class MapemallCrawlerSpider(scrapy.Spider):
             ) if raw_product_name else None
             product_price = ''.join(raw_product_price).strip(
             ) if raw_product_price else None
+            product_price = EcommerceItem.clean_price(self, product_price, ". ")
             product_image_link = ''.join(raw_product_image_link).strip(
             ) if raw_product_image_link else None
             product_link = ''.join(raw_product_link).strip(
             ) if raw_product_link else None
-            product_price = MapemallCrawlerSpider.clean_product_price(self,product_price)
             
             # select category
             product_category = EcommerceItem.get_category(self, response.request.url, site_name)
@@ -84,11 +84,6 @@ class MapemallCrawlerSpider(scrapy.Spider):
             )
 
         self.driver.close()
-
-    def clean_product_price(self,product_price):
-        price = SplitString.action(self,product_price,". ")
-        price = SplitString.action(self,price[1],".")
-        return int(''.join(price))
 
     def make_dir(self,dirname):
         current_path = os.getcwd()
