@@ -63,14 +63,10 @@ class MapemallSpider(scrapy.Spider):
             # select category
             product_category = EcommerceItem.get_category(self, response.request.url, site_name)
 
-            # create image directory
-            dirname = 'images'
-            MapemallSpider.make_dir(self, dirname)
-
             # download image
             raw_product_image_link = MapemallSpider.split_image_url(self, raw_product_image_link)
             image_filename = MapemallSpider.split_image_filename(self, raw_product_image_link)
-            MapemallSpider.download_images(self, dirname, raw_product_image_link, image_filename)
+            EcommerceItem.download_images(self, raw_product_image_link, image_filename)
 
             # storing item
             yield EcommerceItem (
@@ -85,22 +81,6 @@ class MapemallSpider(scrapy.Spider):
 
         self.driver.close()
 
-    def make_dir(self,dirname):
-        current_path = os.getcwd()
-        path = os.path.join(current_path, dirname)
-        if not os.path.exists(path):
-            os.makedirs(path)
-
-    def download_images(self,dirname, link, raw_product_name):
-        response = requests.get(link, stream=True)
-        MapemallSpider.save_image_to_file(self, response, dirname, raw_product_name)
-        time.sleep(3)
-        del response
-
-    def save_image_to_file(self,image, dirname, suffix):
-        with open('{dirname}/{suffix}.jpg'.format(dirname=dirname, suffix=suffix), 'wb') as out_file:
-            shutil.copyfileobj(image.raw, out_file)
-    
     def scroll(self, timeout):
         scroll_pause_time = timeout
         totalPages = int(self.driver.execute_script(" return document.getElementById('totalPages').value"))

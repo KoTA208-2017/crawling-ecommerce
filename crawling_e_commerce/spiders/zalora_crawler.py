@@ -70,14 +70,10 @@ class ZaloraSpider(scrapy.Spider):
             # select category
             product_category = EcommerceItem.get_category(self, response.request.url, site_name)
 
-            # create image directory
-            dirname = 'images'
-            ZaloraSpider.make_dir(self, dirname)
-
             # download image
             image_filename = ZaloraSpider.split_image_filename(self, raw_product_image_link)
             raw_product_image_link = ZaloraSpider.split_image_url(self, raw_product_image_link)
-            ZaloraSpider.download_images(self, dirname, raw_product_image_link, image_filename)
+            EcommerceItem.download_images(self, raw_product_image_link, image_filename)
 
             # storing item
             yield EcommerceItem (
@@ -91,22 +87,6 @@ class ZaloraSpider(scrapy.Spider):
             )
 
         self.driver.close()
-
-    def make_dir(self,dirname):
-        current_path = os.getcwd()
-        path = os.path.join(current_path, dirname)
-        if not os.path.exists(path):
-            os.makedirs(path)
-
-    def download_images(self,dirname, link, raw_product_name):
-        response = requests.get(link, stream=True)
-        ZaloraSpider.save_image_to_file(self, response, dirname, raw_product_name)
-        time.sleep(3)
-        del response
-
-    def save_image_to_file(self,image, dirname, suffix):
-        with open('{dirname}/{suffix}.jpg'.format(dirname=dirname, suffix=suffix), 'wb') as out_file:
-            shutil.copyfileobj(image.raw, out_file)
 
     def split_image_url(self, url):
         separator = 'fff)/'
@@ -124,19 +104,3 @@ class ZaloraSpider(scrapy.Spider):
         separator = 'id='
         result_url = SplitString.action(self, url, separator)
         return result_url[1]
-
-    def select_category(self, url):
-        argument = ZaloraSpider.split_url(self, url)
-        logging.info("argument %s", argument)
-        
-        category = {
-            '175': Category.select_top(self),
-            '704': Category.select_top(self),
-            '16': Category.select_bottom(self),
-            '18': Category.select_bottom(self),
-            '17': Category.select_bottom(self),
-            '2878': Category.select_bottom(self),
-            '25': Category.select_long(self)
-        }
-        
-        return category.get(str(argument), "category")

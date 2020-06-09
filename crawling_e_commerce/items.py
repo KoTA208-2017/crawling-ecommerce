@@ -6,6 +6,9 @@
 # https://docs.scrapy.org/en/latest/topics/items.html
 
 import scrapy
+import requests
+import shutil
+import time
 
 def split_string(self, text, separator):
     txt = str(text)
@@ -110,3 +113,13 @@ class EcommerceItem(scrapy.Item):
         new_price = split_string(self, text=argument[1], separator=".")
         
         return int(''.join(new_price))
+
+    def download_images(self, link, filename):
+        response = requests.get(link, stream=True)
+        EcommerceItem.save_image_to_file(self, response, filename)
+        time.sleep(1)
+        del response
+
+    def save_image_to_file(self, image, filename):
+        with open('{dirname}/{filename}.jpg'.format(dirname='images', filename=filename), 'wb') as out_file:
+            shutil.copyfileobj(image.raw, out_file)
