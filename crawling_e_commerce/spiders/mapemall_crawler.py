@@ -14,7 +14,7 @@ from ..items import EcommerceItem
 from ..split_string import SplitString
 from ..category import Category
 
-class MapemallCrawlerSpider(scrapy.Spider):
+class MapemallSpider(scrapy.Spider):
     name = 'mapemall'
     allowed_domains = ['www.mapemall.com']
     options = webdriver.ChromeOptions()
@@ -22,7 +22,7 @@ class MapemallCrawlerSpider(scrapy.Spider):
 
     def __init__(self):
         self.start_urls = ['https://www.mapemall.com/forher/clothing?ct=1-7-13-113']
-        self.driver = webdriver.Chrome(chrome_options=MapemallCrawlerSpider.options)
+        self.driver = webdriver.Chrome(chrome_options=MapemallSpider.options)
 
     def parse(self, response):
         """Function to process clothes results page"""
@@ -30,7 +30,7 @@ class MapemallCrawlerSpider(scrapy.Spider):
         self.driver.get(response.url)
 
         # scroll page
-        MapemallCrawlerSpider.scroll(self, 5)
+        MapemallSpider.scroll(self, 5)
 
         # item containers for storing product
         items = EcommerceItem()
@@ -65,12 +65,12 @@ class MapemallCrawlerSpider(scrapy.Spider):
 
             # create image directory
             dirname = 'images'
-            MapemallCrawlerSpider.make_dir(self, dirname)
+            MapemallSpider.make_dir(self, dirname)
 
             # download image
-            raw_product_image_link = MapemallCrawlerSpider.split_image_url(self, raw_product_image_link)
-            image_filename = MapemallCrawlerSpider.split_image_filename(self, raw_product_image_link)
-            MapemallCrawlerSpider.download_images(self, dirname, raw_product_image_link, image_filename)
+            raw_product_image_link = MapemallSpider.split_image_url(self, raw_product_image_link)
+            image_filename = MapemallSpider.split_image_filename(self, raw_product_image_link)
+            MapemallSpider.download_images(self, dirname, raw_product_image_link, image_filename)
 
             # storing item
             yield EcommerceItem (
@@ -93,7 +93,7 @@ class MapemallCrawlerSpider(scrapy.Spider):
 
     def download_images(self,dirname, link, raw_product_name):
         response = requests.get(link, stream=True)
-        MapemallCrawlerSpider.save_image_to_file(self, response, dirname, raw_product_name)
+        MapemallSpider.save_image_to_file(self, response, dirname, raw_product_name)
         time.sleep(3)
         del response
 

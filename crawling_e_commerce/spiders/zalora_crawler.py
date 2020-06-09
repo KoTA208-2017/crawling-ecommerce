@@ -14,7 +14,7 @@ from ..items import EcommerceItem
 from ..split_string import SplitString
 from ..category import Category
 
-class ZaloraCrawlerSpider(scrapy.Spider):
+class ZaloraSpider(scrapy.Spider):
     name = 'zalora'
     allowed_domains = ['www.zalora.co.id']
     options = webdriver.ChromeOptions()
@@ -22,7 +22,7 @@ class ZaloraCrawlerSpider(scrapy.Spider):
 
     def __init__(self):
         self.start_urls = ['https://www.zalora.co.id/women/pakaian/?page=2&category_id=18']
-        self.driver = webdriver.Chrome(chrome_options=ZaloraCrawlerSpider.options)
+        self.driver = webdriver.Chrome(chrome_options=ZaloraSpider.options)
 
     def parse(self, response):
         """Function to process clothes category results page"""
@@ -72,12 +72,12 @@ class ZaloraCrawlerSpider(scrapy.Spider):
 
             # create image directory
             dirname = 'images'
-            ZaloraCrawlerSpider.make_dir(self, dirname)
+            ZaloraSpider.make_dir(self, dirname)
 
             # download image
-            image_filename = ZaloraCrawlerSpider.split_image_filename(self, raw_product_image_link)
-            raw_product_image_link = ZaloraCrawlerSpider.split_image_url(self, raw_product_image_link)
-            ZaloraCrawlerSpider.download_images(self, dirname, raw_product_image_link, image_filename)
+            image_filename = ZaloraSpider.split_image_filename(self, raw_product_image_link)
+            raw_product_image_link = ZaloraSpider.split_image_url(self, raw_product_image_link)
+            ZaloraSpider.download_images(self, dirname, raw_product_image_link, image_filename)
 
             # storing item
             yield EcommerceItem (
@@ -100,7 +100,7 @@ class ZaloraCrawlerSpider(scrapy.Spider):
 
     def download_images(self,dirname, link, raw_product_name):
         response = requests.get(link, stream=True)
-        ZaloraCrawlerSpider.save_image_to_file(self, response, dirname, raw_product_name)
+        ZaloraSpider.save_image_to_file(self, response, dirname, raw_product_name)
         time.sleep(3)
         del response
 
@@ -126,7 +126,7 @@ class ZaloraCrawlerSpider(scrapy.Spider):
         return result_url[1]
 
     def select_category(self, url):
-        argument = ZaloraCrawlerSpider.split_url(self, url)
+        argument = ZaloraSpider.split_url(self, url)
         logging.info("argument %s", argument)
         
         category = {
