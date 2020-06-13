@@ -71,7 +71,9 @@ class ZaloraSpider(scrapy.Spider):
             product_category = EcommerceItem.get_category(self, response.request.url, site_name)
 
             # download image
-            image_filename = ZaloraSpider.split_image_filename(self, raw_product_image_link)
+            image_filename = EcommerceItem.get_image_filename(self, raw_product_image_link, ".com/")
+            image_filename = EcommerceItem.get_image_filename(self, image_filename[1], "=/")
+            image_filename = "z_" + image_filename[0]
             raw_product_image_link = EcommerceItem.clean_image_link(self, raw_product_image_link, "fff)/")
             raw_product_image_link = raw_product_image_link[1]
             EcommerceItem.download_images(self, raw_product_image_link, image_filename)
@@ -88,15 +90,3 @@ class ZaloraSpider(scrapy.Spider):
             )
 
         self.driver.close()
-
-    def split_image_filename(self, url):
-        separator = '.com/'
-        result_image_filename = SplitString.action(self, url, separator)
-        separator = '=/'
-        result_image_filename = SplitString.action(self, result_image_filename[1], separator)
-        return 'z_' + result_image_filename[0]
-
-    def split_url(self, url):
-        separator = 'id='
-        result_url = SplitString.action(self, url, separator)
-        return result_url[1]

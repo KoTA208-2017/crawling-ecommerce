@@ -35,7 +35,6 @@ class EcommerceItem(scrapy.Item):
     image_urls = scrapy.Field()
 
     def get_category(self, url, site_name):
-        print("!sitename " + site_name)
         if(site_name == "Zalora"):
             return EcommerceItem.get_category_zalora(self, url)
         elif(site_name == "Berrybenka"):
@@ -127,3 +126,17 @@ class EcommerceItem(scrapy.Item):
     def clean_image_link(self, url, separator):
         result_image_url = split_string(self, url, separator)
         return result_image_url
+
+    def get_image_filename(self, url, separator):
+        # separator = '.com/'
+        # separator = '/'
+        result_image_filename = split_string(self, url, separator)
+        # separator = '=/'
+        # result_image_filename = split_string(self, result_image_filename[1], separator)
+        # return 'z_' + result_image_filename[0]
+        return result_image_filename
+
+    # def split_image_filename(self, url):
+    #     separator = '/'
+    #     result_image_filename = SplitString.action(self, url, separator)
+    #     return 'm_' + result_image_filename[4]

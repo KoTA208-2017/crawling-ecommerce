@@ -66,7 +66,8 @@ class MapemallSpider(scrapy.Spider):
             # download image
             raw_product_image_link = EcommerceItem.clean_image_link(self, raw_product_image_link, "?x-oss")
             raw_product_image_link = raw_product_image_link[0]
-            image_filename = MapemallSpider.split_image_filename(self, raw_product_image_link)
+            image_filename = EcommerceItem.get_image_filename(self, raw_product_image_link, "/")
+            image_filename = 'm_' + image_filename[4]
             EcommerceItem.download_images(self, raw_product_image_link, image_filename)
 
             # storing item
@@ -93,8 +94,3 @@ class MapemallSpider(scrapy.Spider):
             except ElementNotInteractableException:
                 self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 time.sleep(timeout)
-    
-    def split_image_filename(self, url):
-        separator = '/'
-        result_image_filename = SplitString.action(self, url, separator)
-        return 'm_' + result_image_filename[4]
