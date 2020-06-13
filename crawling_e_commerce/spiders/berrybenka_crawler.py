@@ -57,12 +57,14 @@ class BerrybenkaSpider(scrapy.Spider):
             ) if raw_product_link else None
 
             # split image link
-            image_link = str(raw_product_image_link[0])
+            product_image_link = str(raw_product_image_link[0])
             template = "https://im.berrybenka.com/assets/cache/300x456/product-overlay/_VDEGZ_2836.png"
-            if(image_link == template):
-                raw_product_image_link[0] = BerrybenkaSpider.split_url_image(self, raw_product_image_link[1])
+            if(product_image_link == template):
+                image_link = EcommerceItem.clean_image_link(self, str(raw_product_image_link[1]), "cache/300x456")
+                raw_product_image_link[0] = image_link[0] + "upload" + image_link[1]
             else:
-                raw_product_image_link[0] = BerrybenkaSpider.split_url_image(self, raw_product_image_link[0])
+                image_link = EcommerceItem.clean_image_link(self, str(raw_product_image_link[0]), "cache/300x456")
+                raw_product_image_link[0] = image_link[0] + "upload" + image_link[1]
 
             # storing item
             yield EcommerceItem (
@@ -86,8 +88,3 @@ class BerrybenkaSpider(scrapy.Spider):
             next_url = current_url[0] + BerrybenkaSpider.separator + str(number_product)
             logging.info("current URL %s", next_url)
             yield response.follow(next_url, callback = self.parse, meta = {"category_text": product_category})
-
-    def split_url_image(self,url_image):
-        image = str(url_image)
-        image = image.split("cache/300x456", 1)
-        return image[0] + "upload" + image[1]
