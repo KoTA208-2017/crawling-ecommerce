@@ -11,8 +11,6 @@ from selenium import webdriver
 from selenium.webdriver import Chrome
 from selenium.common.exceptions import NoSuchElementException
 from ..items import EcommerceItem
-from ..split_string import SplitString
-from ..category import Category
 
 class ZaloraSpider(scrapy.Spider):
     name = 'zalora'

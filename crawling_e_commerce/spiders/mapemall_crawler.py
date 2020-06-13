@@ -11,8 +11,6 @@ from selenium import webdriver
 from selenium.webdriver import Chrome
 from selenium.common.exceptions import ElementNotInteractableException
 from ..items import EcommerceItem
-from ..split_string import SplitString
-from ..category import Category
 
 class MapemallSpider(scrapy.Spider):
     name = 'mapemall'
