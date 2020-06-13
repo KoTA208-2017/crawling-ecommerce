@@ -64,7 +64,8 @@ class MapemallSpider(scrapy.Spider):
             product_category = EcommerceItem.get_category(self, response.request.url, site_name)
 
             # download image
-            raw_product_image_link = MapemallSpider.split_image_url(self, raw_product_image_link)
+            raw_product_image_link = EcommerceItem.clean_image_link(self, raw_product_image_link, "?x-oss")
+            raw_product_image_link = raw_product_image_link[0]
             image_filename = MapemallSpider.split_image_filename(self, raw_product_image_link)
             EcommerceItem.download_images(self, raw_product_image_link, image_filename)
 
@@ -92,11 +93,6 @@ class MapemallSpider(scrapy.Spider):
             except ElementNotInteractableException:
                 self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 time.sleep(timeout)
-
-    def split_image_url(self, url):
-        separator = '?x-oss'
-        result_image_url = SplitString.action(self, url, separator)
-        return result_image_url[0]
     
     def split_image_filename(self, url):
         separator = '/'

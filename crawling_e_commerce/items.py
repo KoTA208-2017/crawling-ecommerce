@@ -123,3 +123,7 @@ class EcommerceItem(scrapy.Item):
     def save_image_to_file(self, image, filename):
         with open('{dirname}/{filename}.jpg'.format(dirname='images', filename=filename), 'wb') as out_file:
             shutil.copyfileobj(image.raw, out_file)
+
+    def clean_image_link(self, url, separator):
+        result_image_url = split_string(self, url, separator)
+        return result_image_url
