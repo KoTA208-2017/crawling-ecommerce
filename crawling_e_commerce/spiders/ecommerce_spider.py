@@ -68,10 +68,10 @@ class BerrybenkaSpider(scrapy.Spider):
             product_image_link = str(raw_product_image_link[0])
             template = "https://im.berrybenka.com/assets/cache/300x456/product-overlay/_VDEGZ_2836.png"
             if(product_image_link == template):
-                image_link = EcommerceItem.clean_image_link(self, str(raw_product_image_link[1]), "cache/300x456")
+                image_link = EcommerceItem.clean_image_url(self, str(raw_product_image_link[1]), "cache/300x456")
                 raw_product_image_link[0] = image_link[0] + "upload" + image_link[1]
             else:
-                image_link = EcommerceItem.clean_image_link(self, str(raw_product_image_link[0]), "cache/300x456")
+                image_link = EcommerceItem.clean_image_url(self, str(raw_product_image_link[0]), "cache/300x456")
                 raw_product_image_link[0] = image_link[0] + "upload" + image_link[1]
 
             # storing item
@@ -157,7 +157,7 @@ class ZaloraSpider(scrapy.Spider):
             image_filename = EcommerceItem.get_image_filename(self, raw_product_image_link, ".com/")
             image_filename = EcommerceItem.get_image_filename(self, image_filename[1], "=/")
             image_filename = "z_" + image_filename[0]
-            raw_product_image_link = EcommerceItem.clean_image_link(self, raw_product_image_link, "fff)/")
+            raw_product_image_link = EcommerceItem.clean_image_url(self, raw_product_image_link, "fff)/")
             raw_product_image_link = raw_product_image_link[1]
             EcommerceItem.download_images(self, raw_product_image_link, image_filename)
 
@@ -224,7 +224,7 @@ class MapemallSpider(scrapy.Spider):
             product_category = EcommerceItem.get_category(self, response.request.url, site_name)
 
             # download image
-            raw_product_image_link = EcommerceItem.clean_image_link(self, raw_product_image_link, "?x-oss")
+            raw_product_image_link = EcommerceItem.clean_image_url(self, raw_product_image_link, "?x-oss")
             raw_product_image_link = raw_product_image_link[0]
             image_filename = EcommerceItem.get_image_filename(self, raw_product_image_link, "/")
             image_filename = 'm_' + image_filename[4]
