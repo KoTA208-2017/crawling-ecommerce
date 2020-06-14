@@ -68,7 +68,7 @@ class EcommerceItem(scrapy.Item):
         
         return categories.get(str(category),"category")
 
-    def get_category_jeans_mapemall(self, category):
+    def get_category_jeans_mapemall(self, id_category):
         categories = {
             '113': category_top(self),
             '119': category_top(self),
@@ -76,12 +76,13 @@ class EcommerceItem(scrapy.Item):
             '118': category_bottom(self)
         }
         
-        return categories.get(category, "category")
+        return categories.get(id_category, "category")
 
     def get_category_mapemall(self, url):
         argument = split_string(self, text=url, separator="ct=")
         categories = split_string(self, text=argument[1], separator="-")
-        
+        id_category = categories[2]
+
         category = {
             '8': category_top(self),
             '9': category_top(self),
@@ -90,10 +91,11 @@ class EcommerceItem(scrapy.Item):
             '13': EcommerceItem.get_category_jeans_mapemall(self, category=categories[3])
         }
         
-        return category.get(categories[2], "category")
+        return category.get(id_category, "category")
 
     def get_category_zalora(self, url):
         argument = split_string(self, text=url, separator="id=")
+        id_category = str(argument[1])
 
         categories = {
             '175': category_top(self),
@@ -105,7 +107,7 @@ class EcommerceItem(scrapy.Item):
             '25': category_long(self)
         }
         
-        return categories.get(str(argument[1]), "category")
+        return categories.get(id_category, "category")
 
     def clean_price(self, price, separator):
         argument = split_string(self, text=price, separator=separator)
@@ -113,8 +115,8 @@ class EcommerceItem(scrapy.Item):
         
         return int(''.join(new_price))
 
-    def download_images(self, link, filename):
-        response = requests.get(link, stream=True)
+    def download_images(self, url, filename):
+        response = requests.get(url, stream=True)
         EcommerceItem.save_image_to_file(self, response, filename)
         time.sleep(1)
         del response
