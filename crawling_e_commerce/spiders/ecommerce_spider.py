@@ -34,7 +34,6 @@ class BerrybenkaSpider(scrapy.Spider):
         """Function to process clothes category results page"""
         site_name = "Berrybenka"
         product_category = response.meta["category_text"]
-        product_category = EcommerceItem.get_category(self, product_category, site_name)
         products = response.xpath("//*[(@id='li-catalog')]")
         
         # item containers for storing product
@@ -80,7 +79,6 @@ class BerrybenkaSpider(scrapy.Spider):
                 product_name = product_name,
                 product_price = product_price,
                 product_url = product_link,
-                product_category = product_category,
                 image_urls = raw_product_image_link
             )
         
@@ -150,9 +148,6 @@ class ZaloraSpider(scrapy.Spider):
             product_link = ''.join(raw_product_link).strip(
             ) if raw_product_link else None
 
-            # select category
-            product_category = EcommerceItem.get_category(self, response.request.url, site_name)
-
             # download image
             image_filename = EcommerceItem.get_image_filename(self, raw_product_image_link, ".com/")
             image_filename = EcommerceItem.get_image_filename(self, image_filename[1], "=/")
@@ -167,7 +162,6 @@ class ZaloraSpider(scrapy.Spider):
                 product_name = product_name,
                 product_price = product_price,
                 product_url = product_link,
-                product_category = product_category,
                 product_image_url = raw_product_image_link,
                 product_image = image_filename + '.jpg'
             )
@@ -219,9 +213,6 @@ class MapemallSpider(scrapy.Spider):
             ) if raw_product_image_link else None
             product_link = ''.join(raw_product_link).strip(
             ) if raw_product_link else None
-            
-            # select category
-            product_category = EcommerceItem.get_category(self, response.request.url, site_name)
 
             # download image
             raw_product_image_link = EcommerceItem.clean_image_url(self, raw_product_image_link, "?x-oss")
@@ -236,7 +227,6 @@ class MapemallSpider(scrapy.Spider):
                 product_name = product_name,
                 product_price = product_price,
                 product_url = product_link,
-                product_category = product_category,
                 product_image_url = raw_product_image_link,
                 product_image = image_filename + '.jpg'
             )
